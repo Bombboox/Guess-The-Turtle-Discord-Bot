@@ -1,0 +1,1266 @@
+[
+  {
+    "scientific": "Acanthochelys macrocephala",
+    "common": "Pantanal swamp turtle"
+  },
+  {
+    "scientific": "Acanthochelys pallidipectoris",
+    "common": "Chaco swamp turtle"
+  },
+  {
+    "scientific": "Acanthochelys radiolata",
+    "common": "Coastal swamp turtle"
+  },
+  {
+    "scientific": "Acanthochelys spixii",
+    "common": "Spix’s swamp turtle"
+  },
+  {
+    "scientific": "Actinemys marmorata",
+    "common": "Pacific pond turtle"
+  },
+  {
+    "scientific": "Agrionemys horsfieldii",
+    "common": "Horsfield’s tortoise"
+  },
+  {
+    "scientific": "Aldabrachelys arnoldi",
+    "common": "Arnold’s tortoise"
+  },
+  {
+    "scientific": "Aldabrachelys dussumieri",
+    "common": "Giant Aldabra tortoise"
+  },
+  {
+    "scientific": "Aldabrachelys hololissa",
+    "common": "Holoissa tortoise"
+  },
+  {
+    "scientific": "Amyda cartilaginea",
+    "common": "Asiatic softshell turtle"
+  },
+  {
+    "scientific": "Apalone ferox",
+    "common": "Florida softshell turtle"
+  },
+  {
+    "scientific": "Apalone mutica",
+    "common": "Smooth softshell turtle"
+  },
+  {
+    "scientific": "Apalone spinifera",
+    "common": "Spiny softshell turtle"
+  },
+  {
+    "scientific": "Aspideretes gangeticus",
+    "common": "Indian softshell turtle"
+  },
+  {
+    "scientific": "Aspideretes hurum",
+    "common": "Indian peacock softshell turtle"
+  },
+  {
+    "scientific": "Aspideretes leithii",
+    "common": "Leith softshell turtle"
+  },
+  {
+    "scientific": "Aspideretes nigricans",
+    "common": "Black softshell turtle"
+  },
+  {
+    "scientific": "Astrochelys radiata",
+    "common": "Radiated tortoise"
+  },
+  {
+    "scientific": "Astrochelys yniphora",
+    "common": "Ploughshare tortoise"
+  },
+  {
+    "scientific": "Batagur affinis",
+    "common": "Southern mangrove terrapin"
+  },
+  {
+    "scientific": "Batagur baska",
+    "common": "Mangrove terrapin"
+  },
+  {
+    "scientific": "Batrachemys dahli",
+    "common": "Dahl’s toad-headed turtle"
+  },
+  {
+    "scientific": "Batrachemys heliostemma",
+    "common": "Yellow toad-headed turtle"
+  },
+  {
+    "scientific": "Batrachemys nasutus",
+    "common": "Guianan toad-headed turtle"
+  },
+  {
+    "scientific": "Batrachemys raniceps",
+    "common": "Amazon toad-headed turtle"
+  },
+  {
+    "scientific": "Batrachemys tuberculatus",
+    "common": "Tuberculate toad-headed turtle"
+  },
+  {
+    "scientific": "Batrachemys zuliae",
+    "common": "Zulia toad-headed turtle"
+  },
+  {
+    "scientific": "Bufocephala vanderhaegei",
+    "common": "Vanderhage’s toad-headed turtle"
+  },
+  {
+    "scientific": "Callagur borneoensis",
+    "common": "Painted terrapin"
+  },
+  {
+    "scientific": "Caretta caretta",
+    "common": "Loggerhead sea turtle"
+  },
+  {
+    "scientific": "Carettochelys insculpta",
+    "common": "Pig-nosed turtle"
+  },
+  {
+    "scientific": "Centrochely  sulcata",
+    "common": "African spurred tortoise"
+  },
+  {
+    "scientific": "Chelodina longicollis",
+    "common": "Easternlong-necked turtle"
+  },
+  {
+    "scientific": "Chelodina canni",
+    "common": "Cann’s long-necked turtle"
+  },
+  {
+    "scientific": "Chelodina mccordi",
+    "common": "Rote Island long-necked turtle"
+  },
+  {
+    "scientific": "Chelodina novaeguineae",
+    "common": "New Guinea snake-necked turtle"
+  },
+  {
+    "scientific": "Chelodina pritchardi",
+    "common": "Pritchard’s long necked turtle"
+  },
+  {
+    "scientific": "Chelodina reimanni",
+    "common": "Reimann’s snake-necked turtle"
+  },
+  {
+    "scientific": "Chelodina steindachneri",
+    "common": "Steindachner’s snake-necked turtle"
+  },
+  {
+    "scientific": "Chelonia mydas",
+    "common": "Green sea turtle"
+  },
+  {
+    "scientific": "Chelonidis carbonaria",
+    "common": "Red-footed tortoise"
+  },
+  {
+    "scientific": "Chelonidis chilensis",
+    "common": "Patagonian tortoise"
+  },
+  {
+    "scientific": "Chelonoidisdenticulata",
+    "common": "Yellowfoot tortoise"
+  },
+  {
+    "scientific": "Chelonoidis nigra",
+    "common": "Galapagos giant tortoise"
+  },
+  {
+    "scientific": "Chelonoidis petersi",
+    "common": "Chaco tortoise"
+  },
+  {
+    "scientific": "Chelus fimbriata",
+    "common": "Matamata"
+  },
+  {
+    "scientific": "Chelydra acutirostris",
+    "common": "South American snapping turtle"
+  },
+  {
+    "scientific": "Chelydra rossignonii",
+    "common": "Central American snapping turtle"
+  },
+  {
+    "scientific": "Chelydra serpentina",
+    "common": "Common snapping turtle"
+  },
+  {
+    "scientific": "Chersina angulata",
+    "common": "Angulated tortoise"
+  },
+  {
+    "scientific": "Chinemys nigricans",
+    "common": "Red-necked pond turtle"
+  },
+  {
+    "scientific": "Chinemys reevesii",
+    "common": "Reeve’s turtle"
+  },
+  {
+    "scientific": "Chitra chitra",
+    "common": "SE Asian narrow-headed softshell turtle"
+  },
+  {
+    "scientific": "Chitra indica",
+    "common": "Indian narrow-headed softshell turtle"
+  },
+  {
+    "scientific": "Chitra vandijki",
+    "common": "Burmese narrow-headed softshell turtle"
+  },
+  {
+    "scientific": "Chrysemys picta",
+    "common": "Painted turtle"
+  },
+  {
+    "scientific": "Claudius angustatus",
+    "common": "Narrow-bridged turtle"
+  },
+  {
+    "scientific": "Clemmys guttata",
+    "common": "Spotted turtle"
+  },
+  {
+    "scientific": "Cuora amboinensis",
+    "common": "SE Asian box turtle"
+  },
+  {
+    "scientific": "Cuora aurocapitata",
+    "common": "Yellow-headed box turtle"
+  },
+  {
+    "scientific": "Cuora favomarginata",
+    "common": "Common yellow-margined box turtle"
+  },
+  {
+    "scientific": "Cuora galbinifrons",
+    "common": "Indochinese box turte"
+  },
+  {
+    "scientific": "Cuora mccordi",
+    "common": "McCord’s box turtle"
+  },
+  {
+    "scientific": "Cuora pani",
+    "common": "Pan’s box turtle"
+  },
+  {
+    "scientific": "Cuora trifasciata",
+    "common": "Chinese three-striped box turtle"
+  },
+  {
+    "scientific": "Cuora yunnanensis",
+    "common": "Yunnan box turtle"
+  },
+  {
+    "scientific": "Cuora zhoui",
+    "common": "Zhou’s box turtle"
+  },
+  {
+    "scientific": "Cyclanorbis elegans",
+    "common": "Nubian flap-shelled turtle"
+  },
+  {
+    "scientific": "Cyclanorbis senegalensis",
+    "common": "Senegal flap-shelled turtle"
+  },
+  {
+    "scientific": "Cyclemys atripons",
+    "common": "Black-bridged leaf turtle"
+  },
+  {
+    "scientific": "Cyclemys dentata",
+    "common": "Asian leaf turtle"
+  },
+  {
+    "scientific": "Cyclemys enigmatica",
+    "common": "Enigmatic leaf turtle"
+  },
+  {
+    "scientific": "Cyclemys fusca",
+    "common": "Dusky leaf turtle"
+  },
+  {
+    "scientific": "Cyclemys gemeli",
+    "common": "Gemel leaf turtle"
+  },
+  {
+    "scientific": "Cyclemys ovata",
+    "common": "Borneo leaf turtle"
+  },
+  {
+    "scientific": "Cyclemys oldhami",
+    "common": "Oldham’s leaf turtle"
+  },
+  {
+    "scientific": "Cycloderma aubryi",
+    "common": "Aubry’s flap-shelled turtle"
+  },
+  {
+    "scientific": "Cycloderma frenatum",
+    "common": "Zambezi flap-shelled turtle"
+  },
+  {
+    "scientific": "Deirochelys reticularia",
+    "common": "Chicken turtle"
+  },
+  {
+    "scientific": "Dermatemys mawii",
+    "common": "Central American river turtle"
+  },
+  {
+    "scientific": "Dermochelys coriacea",
+    "common": "Leatherback sea turtle"
+  },
+  {
+    "scientific": "Dogania subplana",
+    "common": "Malayan softshell turtle"
+  },
+  {
+    "scientific": "Elseya albagula",
+    "common": "Southern snapping turtle"
+  },
+  {
+    "scientific": "Elseya bellii",
+    "common": "Bell’s saw-shelled turtle"
+  },
+  {
+    "scientific": "Elseya branderhorsti",
+    "common": "Southern New Guinea snapping turtle"
+  },
+  {
+    "scientific": "Elseya dentata",
+    "common": "Northern snapping turtle"
+  },
+  {
+    "scientific": "Elseya georgesi",
+    "common": "Bellingger river turtle"
+  },
+  {
+    "scientific": "Elseya irwini",
+    "common": "Irwin’s turtle"
+  },
+  {
+    "scientific": "Elseya jukesi",
+    "common": "Jukes’ snapping turtle"
+  },
+  {
+    "scientific": "Elseya latisternum",
+    "common": "Saw-shelled turtle"
+  },
+  {
+    "scientific": "Elseya lavarackorum",
+    "common": "Lavarackor’s snapping turtle"
+  },
+  {
+    "scientific": "Elseya novaeguineae",
+    "common": "New Guinea snapping turtle"
+  },
+  {
+    "scientific": "Elseya purvisi",
+    "common": "Manning River turtle"
+  },
+  {
+    "scientific": "Elsya schultzei",
+    "common": "Schultz’s snapping turtle"
+  },
+  {
+    "scientific": "Elsya strilingi",
+    "common": "Stirling’s snapping turtle"
+  },
+  {
+    "scientific": "Elusor macrurus",
+    "common": "Mary River turtle"
+  },
+  {
+    "scientific": "Emydoidea blandingii",
+    "common": "Blanding’s turtle"
+  },
+  {
+    "scientific": "Emydura australis",
+    "common": "Australian big-headed turtle"
+  },
+  {
+    "scientific": "Emydura macquarii",
+    "common": "Murray River turtle"
+  },
+  {
+    "scientific": "Emydura subglobosa",
+    "common": "Red-bellied short-necked turtle"
+  },
+  {
+    "scientific": "Emydura tanybaraga",
+    "common": "Yellow-faced turtle"
+  },
+  {
+    "scientific": "Emydura victoriae",
+    "common": "Northern red-faced turtle"
+  },
+  {
+    "scientific": "Emys orbicularis",
+    "common": "Common European pond turtle"
+  },
+  {
+    "scientific": "Emys trinacris",
+    "common": "Sicilian pond turtle"
+  },
+  {
+    "scientific": "Eretmochelys imbricata",
+    "common": "Hawksbill sea turtle"
+  },
+  {
+    "scientific": "Erymnochelys madagascariensis",
+    "common": "Madagascar big-headed turtle"
+  },
+  {
+    "scientific": "Geochelone elegans",
+    "common": "Indian star tortoise"
+  },
+  {
+    "scientific": "Geochelone platynota",
+    "common": "Burmese starred tortoise"
+  },
+  {
+    "scientific": "Geoclemys hamiltonii",
+    "common": "Spotted pond turtle"
+  },
+  {
+    "scientific": "Geoemyda japonica",
+    "common": "Ryukyu leaf turtle"
+  },
+  {
+    "scientific": "Geoemyda spengleri",
+    "common": "Black-breasted leaf Turtle"
+  },
+  {
+    "scientific": "Glyptemys insculpta",
+    "common": "Wood turtle"
+  },
+  {
+    "scientific": "Glyptemys muhlenbergii",
+    "common": "Bog turtle"
+  },
+  {
+    "scientific": "Gopherus agassizii",
+    "common": "Desert tortoise"
+  },
+  {
+    "scientific": "Gopherus berlandieri",
+    "common": "Texas tortoise"
+  },
+  {
+    "scientific": "Gopherus flavomarginatus",
+    "common": "Mexican giant gopher tortoise"
+  },
+  {
+    "scientific": "Gopherus polyphemus",
+    "common": "Gopher tortoise"
+  },
+  {
+    "scientific": "Graptemys barbouri",
+    "common": "Barbour’s map turtle"
+  },
+  {
+    "scientific": "Graptemys caglei",
+    "common": "Cagle’s map turtle"
+  },
+  {
+    "scientific": "Graptemys ernsti",
+    "common": "Ernst’s map turtle"
+  },
+  {
+    "scientific": "Graptemys flavimaculata",
+    "common": "Yellow-blotched map turtle"
+  },
+  {
+    "scientific": "Graptemys geographica",
+    "common": "Common map turtle"
+  },
+  {
+    "scientific": "Graptemys gibbonsi",
+    "common": "Gibbons’ map turtle"
+  },
+  {
+    "scientific": "Graptemys nigrinoda",
+    "common": "Black-nobbed map turtle"
+  },
+  {
+    "scientific": "Graptemys oculifera",
+    "common": "Ringed map turtle"
+  },
+  {
+    "scientific": "Graptemys ouachitensis",
+    "common": "Ouachita map turtle"
+  },
+  {
+    "scientific": "Graptemys pseudogeographica",
+    "common": "False map turtle"
+  },
+  {
+    "scientific": "Graptemys pulchra",
+    "common": "Alabama map turtle"
+  },
+  {
+    "scientific": "Graptemys versa",
+    "common": "Texas map turtle"
+  },
+  {
+    "scientific": "Hardella thurjii",
+    "common": "Crowned river turtle"
+  },
+  {
+    "scientific": "Heosemys depressa",
+    "common": "Arakan forest turtle"
+  },
+  {
+    "scientific": "Heosemys grandis",
+    "common": "Giant Asian pond turtle"
+  },
+  {
+    "scientific": "Heosemys spinsosa",
+    "common": "Spiny turtel"
+  },
+  {
+    "scientific": "Hieremys annandalii",
+    "common": "Yellow-headed temple turtle"
+  },
+  {
+    "scientific": "Homopus areolatus",
+    "common": "Beaked Cape tortoise"
+  },
+  {
+    "scientific": "Homopus boulengeri",
+    "common": "Boulenger’ padloper"
+  },
+  {
+    "scientific": "Homopus femoralis",
+    "common": "Karoo Cape tortoise"
+  },
+  {
+    "scientific": "Homopus signatus",
+    "common": "Speckled Cape tortoise"
+  },
+  {
+    "scientific": "Homopus solus",
+    "common": "Nama Cape tortoise"
+  },
+  {
+    "scientific": "Hydromedusa maximiliani",
+    "common": "Brazilian snake-necked turtle"
+  },
+  {
+    "scientific": "Hydromedusa tectifera",
+    "common": "South American snake-necked turtle"
+  },
+  {
+    "scientific": "Indotestudo elongata",
+    "common": "Elongated tortoise"
+  },
+  {
+    "scientific": "Indotestudo fortenii",
+    "common": "Forsten’ tortoise"
+  },
+  {
+    "scientific": "Indotestudo  travancorica",
+    "common": "Travancore tortoise"
+  },
+  {
+    "scientific": "Kachuga dhongoka",
+    "common": "Three-striped roof turtle"
+  },
+  {
+    "scientific": "Kachuga kachuga",
+    "common": "Red-crowned roof turtle"
+  },
+  {
+    "scientific": "Kachuga trivittata",
+    "common": "Burmese roof turtle"
+  },
+  {
+    "scientific": "Kinixys belliana",
+    "common": "Bell’s eastern hinge-back tortoise"
+  },
+  {
+    "scientific": "Kinixys  erosa",
+    "common": "Serrated hinge-back tortoise"
+  },
+  {
+    "scientific": "Kinixys  homeana",
+    "common": "Home’s hinge-back tortoise"
+  },
+  {
+    "scientific": "Kinixys  lobatsiana",
+    "common": "Lobatse hinge-back tortoise"
+  },
+  {
+    "scientific": "Kinixys  natalensis",
+    "common": "Natal hinge-back tortoise"
+  },
+  {
+    "scientific": "Kinixys  spekii",
+    "common": "Speke’s hinge-back tortoise"
+  },
+  {
+    "scientific": "Kinosternon acutum",
+    "common": "Tabasco mud turtle"
+  },
+  {
+    "scientific": "Kinosternon  alamosae",
+    "common": "Alamos mud tgurtle"
+  },
+  {
+    "scientific": "Kinosternon angustipons",
+    "common": "Narrow-bridged mud turtle"
+  },
+  {
+    "scientific": "Kinosternon arizonense",
+    "common": "Arizona mud turtle"
+  },
+  {
+    "scientific": "Kinosternon  baurii",
+    "common": "Striped mud turtle"
+  },
+  {
+    "scientific": "Kinosternon  chimalhuaca",
+    "common": "Jalisco mud turtle"
+  },
+  {
+    "scientific": "Kinosternon creaseri",
+    "common": "Creaser’s mud turtle"
+  },
+  {
+    "scientific": "Kinosternon dunni",
+    "common": "Dunn’s mud turtle"
+  },
+  {
+    "scientific": "Kinosternon durangoense",
+    "common": "Durango mud turtle"
+  },
+  {
+    "scientific": "Kinosternon flavescens",
+    "common": "Yellow mud turtle"
+  },
+  {
+    "scientific": "Kinosternon herrerai",
+    "common": "Herrera’s mud turtle"
+  },
+  {
+    "scientific": "Kinosternon hiriptipes",
+    "common": "Mexican rough-footed mud turtle"
+  },
+  {
+    "scientific": "Kinosternon integrum",
+    "common": "Mexican mud turtle"
+  },
+  {
+    "scientific": "Kinosternon leucostomum",
+    "common": "White-lipped mud turtle"
+  },
+  {
+    "scientific": "Kinosternon oaxacae",
+    "common": "Oaxaca mud turtle"
+  },
+  {
+    "scientific": "Kinosternon scorpioides",
+    "common": "Scorpion mud turtle"
+  },
+  {
+    "scientific": "Kinosternon sonoriense",
+    "common": "Sonoran mud turtle"
+  },
+  {
+    "scientific": "Kinosternon subrubrum",
+    "common": "Eastern mud turtle"
+  },
+  {
+    "scientific": "Lepidochelys kempii",
+    "common": "Kemp’s ridley sea turtle"
+  },
+  {
+    "scientific": "Lepidochelys olivacea",
+    "common": "Olive ridley sea turtle"
+  },
+  {
+    "scientific": "Leucocephalon  yuwonoi",
+    "common": "Sulawesi forest turtle"
+  },
+  {
+    "scientific": "Lissemys punctata",
+    "common": "Indian flapshell turtle"
+  },
+  {
+    "scientific": "Lissemys  scutata",
+    "common": "Burmese flap-shelled turtlr"
+  },
+  {
+    "scientific": "Macrochelodina burrungandjii",
+    "common": "Arnhem Land snake-necked turtle"
+  },
+  {
+    "scientific": "Macrochelodina  expansa",
+    "common": "Broad-shelled snake-necked turtle"
+  },
+  {
+    "scientific": "Macrochelodina  kuchlingi",
+    "common": "Kuchling’s long-necked turtle"
+  },
+  {
+    "scientific": "Macrochelodina parkeri",
+    "common": "Parker’s  long-necked turtle"
+  },
+  {
+    "scientific": "Macrochelodina rugosa",
+    "common": "Northern snaked-necked turtle"
+  },
+  {
+    "scientific": "Macrochelodina walloyarrina",
+    "common": "Kimberley  long-necked turtle"
+  },
+  {
+    "scientific": "Macrochelys",
+    "common": "Alligator snapping turtle"
+  },
+  {
+    "scientific": "Macrodiremys oblonga",
+    "common": "Narrow-brested snake-neccked turtle"
+  },
+  {
+    "scientific": "Malacemys terrapin",
+    "common": "Diamondback terrapin"
+  },
+  {
+    "scientific": "Malacocbersus",
+    "common": "African pancake tortoise"
+  },
+  {
+    "scientific": "Malayemys macrocepbalsa",
+    "common": "Malayan snail-eating turtle"
+  },
+  {
+    "scientific": "Malayemys subtrijuga",
+    "common": "Mekong snail-eating turtle"
+  },
+  {
+    "scientific": "Manouria emys",
+    "common": "Asian brown tortoise"
+  },
+  {
+    "scientific": "Manouria impressa",
+    "common": "Impressed tortoise"
+  },
+  {
+    "scientific": "Mauremys annamensis",
+    "common": "Japanese pond turtle nnam pond turtle"
+  },
+  {
+    "scientific": "Mauremys caspica",
+    "common": "Caspian terrapin"
+  },
+  {
+    "scientific": "Mauremys japonica",
+    "common": "Japanese pond turtle"
+  },
+  {
+    "scientific": "Mauremys leprosa",
+    "common": "Spanish terrapin"
+  },
+  {
+    "scientific": "Mauremys  mutica",
+    "common": "Yallow pond turtle"
+  },
+  {
+    "scientific": "Mauremys  rivulata",
+    "common": "Eastern  Mediterranean pond turtle"
+  },
+  {
+    "scientific": "Melanochelys tricarinata",
+    "common": "Tricarinate hill turtle"
+  },
+  {
+    "scientific": "Melanochelys trijuga",
+    "common": "Indian black turtle"
+  },
+  {
+    "scientific": "Mesoclemmys gibba",
+    "common": "Common toad-headed turtle"
+  },
+  {
+    "scientific": "Mesoclemmys perplexa",
+    "common": "Brazilian toad-headed turtle"
+  },
+  {
+    "scientific": "Morenia ocellata",
+    "common": "Burmese eyed turtle"
+  },
+  {
+    "scientific": "Morenia petersi",
+    "common": "Indian eyed turtle"
+  },
+  {
+    "scientific": "Natator depressus",
+    "common": "Flatback sea turtle"
+  },
+  {
+    "scientific": "Nilssonia formosa",
+    "common": "Burmese peacock softshell turtle"
+  },
+  {
+    "scientific": "Notochelys platynota",
+    "common": "Malaysian flat-shelled turtle"
+  },
+  {
+    "scientific": "Ocadia sinensis",
+    "common": "Chinese stripe-necked turtle"
+  },
+  {
+    "scientific": "Orlitia borneensis",
+    "common": "Malayan giant river turtle"
+  },
+  {
+    "scientific": "Palea steindachneri",
+    "common": "Wattle-neckedshell turtle"
+  },
+  {
+    "scientific": "Pangshura lentoria",
+    "common": "Indian tent turtle"
+  },
+  {
+    "scientific": "Pangshura smithii",
+    "common": "Brown roofed turtle"
+  },
+  {
+    "scientific": "Pangshura sylhetensis",
+    "common": "Assam roofed turlte"
+  },
+  {
+    "scientific": "Pangshura tecta",
+    "common": "Indian roofed turtle"
+  },
+  {
+    "scientific": "Pelochelys bibroni",
+    "common": "New Guinea giant softshell turtle"
+  },
+  {
+    "scientific": "Pelochelys cantorii",
+    "common": "Asian giant softshell turte"
+  },
+  {
+    "scientific": "Pelochelys signifera",
+    "common": "Webb’s giant softshell turtle"
+  },
+  {
+    "scientific": "Pelodiscus axenaria",
+    "common": "Hunan softshell tutle"
+  },
+  {
+    "scientific": "Pelodiscus maackii",
+    "common": "Amur softshell turtle"
+  },
+  {
+    "scientific": "Pelodiscus parviformis",
+    "common": "Southern Chinese softshell turtle"
+  },
+  {
+    "scientific": "Pelodiscus sinensis",
+    "common": "Chinese softshell turtle"
+  },
+  {
+    "scientific": "Pelomedusa subrufa",
+    "common": "Common African helmeted turtle"
+  },
+  {
+    "scientific": "Peltocephalus dumerilisnus",
+    "common": "Dumeril’s big-headed river turtle"
+  },
+  {
+    "scientific": "Pelusios adansonii",
+    "common": "Adanson’s mud turtle"
+  },
+  {
+    "scientific": "Pelusios bechuanicus",
+    "common": "Okavango mud turtle"
+  },
+  {
+    "scientific": "Pelusios broadleyu",
+    "common": "Lake Turkana mud turtle"
+  },
+  {
+    "scientific": "Pelusios carinatus",
+    "common": "African keeled mud turtle"
+  },
+  {
+    "scientific": "Pelusios castaneus",
+    "common": "West African mud turtle"
+  },
+  {
+    "scientific": "Pelusios castanoides",
+    "common": "East African yellow-bellied mud turtle"
+  },
+  {
+    "scientific": "Pelusios chapini",
+    "common": "Chapin’s mud turtle"
+  },
+  {
+    "scientific": "Pelusios cupulatta",
+    "common": "Cupulatta’s mud turtle"
+  },
+  {
+    "scientific": "Pelusios gabonensis",
+    "common": "African forest turtle"
+  },
+  {
+    "scientific": "Pelusios marani",
+    "common": "Maran’s sideneck turtle"
+  },
+  {
+    "scientific": "Pelusios nanus",
+    "common": "African dwarf mud turtle"
+  },
+  {
+    "scientific": "Prludiod niger",
+    "common": "West African black turtle"
+  },
+  {
+    "scientific": "Pelusios rhodesianus",
+    "common": "Variable mud turtle"
+  },
+  {
+    "scientific": "Pelusios sinuatus",
+    "common": "East African serrated mud turtle"
+  },
+  {
+    "scientific": "Pelusios subniger",
+    "common": "East African black mud turtle"
+  },
+  {
+    "scientific": "Pelusios upembae",
+    "common": "Upemba mud turtle"
+  },
+  {
+    "scientific": "Pelusios williamsi",
+    "common": "Wilililiam’s mud turtle"
+  },
+  {
+    "scientific": "Phrynops geoffroanus",
+    "common": "Geoffrony’s side-necked turtle"
+  },
+  {
+    "scientific": "Phrynops hilarii",
+    "common": "Spot-bellied toad-headed turtle"
+  },
+  {
+    "scientific": "Phrynops  tuberosus",
+    "common": "Northern toad-headed turtle"
+  },
+  {
+    "scientific": "Phrynops  williamisi",
+    "common": "William’s toad-heade turtle"
+  },
+  {
+    "scientific": "Platemys platycephala",
+    "common": "Twist-necked turtle"
+  },
+  {
+    "scientific": "Platysternon megacephalum",
+    "common": "Big-heade turtle"
+  },
+  {
+    "scientific": "Podocnemis erythrocephala",
+    "common": "Red-heade Amazon River turtle"
+  },
+  {
+    "scientific": "Podocnemis expansa",
+    "common": "Arrau river turtle"
+  },
+  {
+    "scientific": "Podocnemis lewyana",
+    "common": "Magdalena River turtle"
+  },
+  {
+    "scientific": "Podocnemis sextuberculata",
+    "common": "Six-tubercled river turtle"
+  },
+  {
+    "scientific": "Podocnemis unifilis",
+    "common": "Yellow-sotted river turtle"
+  },
+  {
+    "scientific": "Podocnemis vogli",
+    "common": "Savanna side-necked turtle"
+  },
+  {
+    "scientific": "Psammobates geometricus",
+    "common": "Geometric tortoise"
+  },
+  {
+    "scientific": "Psammobates oculifer",
+    "common": "Serrated tortoise"
+  },
+  {
+    "scientific": "Psammobates tentorius",
+    "common": "South African tent tortoise"
+  },
+  {
+    "scientific": "Pseudemydura umbrina",
+    "common": "Western swamp turtle"
+  },
+  {
+    "scientific": "Pseudemys alabamensis",
+    "common": "Alabama red-bellied cooter"
+  },
+  {
+    "scientific": "Pseudemys concinna",
+    "common": "River cooter"
+  },
+  {
+    "scientific": "Pseudemys floridana",
+    "common": "Pond cooter"
+  },
+  {
+    "scientific": "Pseudemys gorzugi",
+    "common": "Rio Grande cooter"
+  },
+  {
+    "scientific": "Pseudemys nelsoni",
+    "common": "Florida red-bellied cooter"
+  },
+  {
+    "scientific": "Pseudemys rubriventris",
+    "common": "Northern red-bellied cooter"
+  },
+  {
+    "scientific": "Pseudemys texana",
+    "common": "Texas cooter"
+  },
+  {
+    "scientific": "Pyxidea mouhotii",
+    "common": "Keeled box turtle"
+  },
+  {
+    "scientific": "Pyxis arachnoides",
+    "common": "Common spider tortoise"
+  },
+  {
+    "scientific": "Pyxis planicauda",
+    "common": "Flat-shelled spider tortoise"
+  },
+  {
+    "scientific": "Rafetus euphraticus",
+    "common": "Euphrates softshell turtle"
+  },
+  {
+    "scientific": "Rafetus swinhoei",
+    "common": "Yangtze softshell turtle"
+  },
+  {
+    "scientific": "Ranacephala hogei",
+    "common": "Hoge’s toad-headed turtle"
+  },
+  {
+    "scientific": "Rheodytes leukops",
+    "common": "Fitzroy River turtle"
+  },
+  {
+    "scientific": "Rheodytes rufapes",
+    "common": "Red toad-headed turtle"
+  },
+  {
+    "scientific": "Rhinoclemmys annulata",
+    "common": "Brown wood turtle"
+  },
+  {
+    "scientific": "Rhinoclemmys areolata",
+    "common": "Furrowed wood turtle"
+  },
+  {
+    "scientific": "Rhinoclemmys  diademata",
+    "common": "Maracaibo wood turtle"
+  },
+  {
+    "scientific": "Rhinoclemmys  funerea",
+    "common": "Black wood turtle"
+  },
+  {
+    "scientific": "Rhinoclemmys  melanosterna",
+    "common": "Colombian wood turtle"
+  },
+  {
+    "scientific": "Rhinoclemmys  nasuta",
+    "common": "Large-nose wood turtle"
+  },
+  {
+    "scientific": "Rhinoclemmys  pulcherrima",
+    "common": "Painted wood turtle"
+  },
+  {
+    "scientific": "Rhinoclemmys   punctularia",
+    "common": "Spot-legged wood turtle"
+  },
+  {
+    "scientific": "Rhinoclemmys   rubiada",
+    "common": "Mexican spotted wood turtle"
+  },
+  {
+    "scientific": "Sacalia bealei",
+    "common": "Beale’s eyed-turtle"
+  },
+  {
+    "scientific": "Sacalia quadricellata",
+    "common": "Four-eyed turtle"
+  },
+  {
+    "scientific": "Siebenrockiella craissicollis",
+    "common": "Black marsh turtle"
+  },
+  {
+    "scientific": "Siebenrockiella  leytensis",
+    "common": "Philippine pond turtle"
+  },
+  {
+    "scientific": "Staurotypus salvinii",
+    "common": "Pacific Coast giant musk turtle"
+  },
+  {
+    "scientific": "Staurotypus  triporcatus",
+    "common": "Mexican giant musk turtle"
+  },
+  {
+    "scientific": "Sternotherus carinatus",
+    "common": "Raor-back musk turtle"
+  },
+  {
+    "scientific": "Sternotherus depressus",
+    "common": "Flattend musk turtle"
+  },
+  {
+    "scientific": "Sternotherus  minor",
+    "common": "Loggerhead musk turtle"
+  },
+  {
+    "scientific": "Sternotherus  odoratus",
+    "common": "Common musk turtle"
+  },
+  {
+    "scientific": "Stigmochelys pardalis",
+    "common": "Leopard tortoise"
+  },
+  {
+    "scientific": "Terrapene carolina",
+    "common": "Common box turtle"
+  },
+  {
+    "scientific": "Terrapene coahuila",
+    "common": "Coahuila box turtle"
+  },
+  {
+    "scientific": "Terrapene nelsoni",
+    "common": "Southern spotted box turtle"
+  },
+  {
+    "scientific": "Terrapene ornata",
+    "common": "Ornate box turtle"
+  },
+  {
+    "scientific": "Testudo graeca",
+    "common": "Mediterranean spur-thighed tortoise"
+  },
+  {
+    "scientific": "Testudo harmanni",
+    "common": "Hermann’s tortoise"
+  },
+  {
+    "scientific": "Testudo kazachstanica",
+    "common": "Kazachstan steppe tortoise"
+  },
+  {
+    "scientific": "Testudo kleinmanni",
+    "common": "Klenmann’s tortoise"
+  },
+  {
+    "scientific": "Testudo marginata",
+    "common": "Marginaed tortoise"
+  },
+  {
+    "scientific": "Testudo rustamovi",
+    "common": "Turkmenian stepped tortoise"
+  },
+  {
+    "scientific": "Trachemys  adiutrix",
+    "common": "Brazilian slider turtle"
+  },
+  {
+    "scientific": "Trachemys  callirostris",
+    "common": "Colombian slider turtle"
+  },
+  {
+    "scientific": "Trachemys  decorata",
+    "common": "Hispaniolan slider turtle"
+  },
+  {
+    "scientific": "Trachemys  decussata",
+    "common": "Cuban slider turtle"
+  },
+  {
+    "scientific": "Trachemys  dorbigni",
+    "common": "Orbigny’s slider turtle"
+  },
+  {
+    "scientific": "Trachemys  emolli",
+    "common": "Nicaraguan slider turtle"
+  },
+  {
+    "scientific": "Trachemys  gaigeae",
+    "common": "Plateau slider turtle"
+  },
+  {
+    "scientific": "Trachemys  nebulosa",
+    "common": "Northweast Mexican slider turtle"
+  },
+  {
+    "scientific": "Trachemys  ornata",
+    "common": "Ornate slider turtle"
+  },
+  {
+    "scientific": "Trachemys  scripta",
+    "common": "Slider turtle"
+  },
+  {
+    "scientific": "Trachemys  stejnegeri",
+    "common": "Central Antillean slider Turtle"
+  },
+  {
+    "scientific": "Trachemys taylori",
+    "common": "Cuatro Cienegas slider turtle"
+  },
+  {
+    "scientific": "Trachemys terrapen",
+    "common": "Jamaican slider turtle"
+  },
+  {
+    "scientific": "Trachemys ventusa",
+    "common": "Meso-american slider turtle"
+  },
+  {
+    "scientific": "Trachemys yaquia",
+    "common": "Yaqui slider turtle"
+  },
+  {
+    "scientific": "Trionyx triuguis",
+    "common": "Nile softshell turtle"
+  },
+  {
+    "scientific": "Vijayachelys silvatica",
+    "common": "Cochin cane forest turtle"
+  }
+]
