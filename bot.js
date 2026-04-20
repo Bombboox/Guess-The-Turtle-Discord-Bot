@@ -1,3 +1,4 @@
+require('dotenv').config();
 const { Client, GatewayIntentBits } = require('discord.js');
 const cron = require('node-cron');
 const fs = require('fs');
@@ -66,6 +67,34 @@ let gameState = {
 
 const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
 
+function timeStringToCron(timeString) {
+  
+  const timeRegex = /^(\d{1,2}):(\d{2})\s*(am|pm|AM|PM)?$/;
+  const match = timeString.trim().match(timeRegex);
+  
+  if (!match) {
+    throw new Error(`Invalid time format: "${timeString}". Use format like "2:52 PM" or "14:52"`);
+  }
+  
+  let hour = parseInt(match[1], 10);
+  const minute = parseInt(match[2], 10);
+  const period = match[3] ? match[3].toUpperCase() : null;
+  
+  if (period) {
+    if (period === 'PM' && hour !== 12) {
+      hour += 12;
+    } else if (period === 'AM' && hour === 12) {
+      hour = 0;
+    }
+  }
+  
+  if (hour < 0 || hour > 23 || minute < 0 || minute > 59) {
+    throw new Error(`Invalid time values: hour must be 0-23, minute must be 0-59`);
+  }
+  
+  return `${minute} ${hour} * * *`;
+}
+
 async function getObservationImages(observationId) {
   const apiUrl = `https://api.inaturalist.org/v1/observations/${observationId}?include=observation_photos`;
   const response = await fetch(apiUrl);
@@ -109,7 +138,12 @@ async function getObservationSex(observationId) {
 async function endGame(channel) {
   if (!gameState.active) return;
 
-  let result = `⏰ Time's up!\nToday's turtle was a ${gameState.turtle.sex} ${gameState.turtle.species}.\n`;
+  let commonName = turtleNameMaps.scientificToCommon[gameState.turtle.species.toLowerCase()] || [];
+  if (commonName.length > 0) {
+    commonName = commonName[0];
+  }
+
+  let result = `⏰ Time's up!\nToday's turtle was a ${gameState.turtle.sex} ${commonName} (${gameState.turtle.species}).\n`;
 
   if (gameState.guessedSex) result += `🎉 Congrats to ${gameState.guessedSex} for guessing the sex!\n`;
   if (gameState.guessedSpecies) result += `🎉 Congrats to ${gameState.guessedSpecies} for guessing the species!\n`;
@@ -174,7 +208,7 @@ client.once('ready', async () => {
   const rawdata = fs.readFileSync('turtles.json');
   const turtles = JSON.parse(rawdata);
 
-  cron.schedule('0 12 * * *', async () => {
+  cron.schedule(timeStringToCron('2:44 PM'), async () => {
     const channel = await client.channels.fetch(CHANNEL_ID);
 
     // pick random turt :3
@@ -206,7 +240,7 @@ client.once('ready', async () => {
     });
 
     // 1 hour to end game
-    setTimeout(() => endGame(channel), 60 * 60 * 1000);
+    setTimeout(() => endGame(channel), 1 * 60 * 1000);
   }, {
     timezone: "America/Los_Angeles" // PST
   });
