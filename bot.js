@@ -208,7 +208,7 @@ client.once('ready', async () => {
   const rawdata = fs.readFileSync('turtles.json');
   const turtles = JSON.parse(rawdata);
 
-  cron.schedule(timeStringToCron('2:44 PM'), async () => {
+  cron.schedule(timeStringToCron('2:46 PM'), async () => {
     const channel = await client.channels.fetch(CHANNEL_ID);
 
     // pick random turt :3
