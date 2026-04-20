@@ -143,7 +143,7 @@ async function endGame(channel) {
     commonName = commonName[0];
   }
 
-  let result = `⏰ Time's up!\nToday's turtle was a ${gameState.turtle.sex} ${commonName} (${gameState.turtle.species}).\n`;
+  let result = `⏰ Time's up!\nToday's turtle was a ${gameState.turtle.sex.toLowerCase()} ${commonName} (${gameState.turtle.species.toLowerCase()}).\n`;
 
   if (gameState.guessedSex) result += `🎉 Congrats to ${gameState.guessedSex} for guessing the sex!\n`;
   if (gameState.guessedSpecies) result += `🎉 Congrats to ${gameState.guessedSpecies} for guessing the species!\n`;
@@ -180,6 +180,10 @@ client.on('messageCreate', async (message) => {
   function isSpeciesGuessMatch(guessText, speciesName) {
     if (!speciesName || !guessText) return false;
     const s = speciesName.toLowerCase();
+    let commonName = turtleNameMaps.scientificToCommon[gameState.turtle.species.toLowerCase()] || [];
+    if (commonName.length > 0) {
+      commonName = commonName[0];
+    }
 
     if (guessText.includes(s)) return true;
 
@@ -198,7 +202,7 @@ client.on('messageCreate', async (message) => {
 
   if (!gameState.guessedSpecies && isSpeciesGuessMatch(guess, gameState.turtle.species)) {
     gameState.guessedSpecies = message.author.username;
-    message.reply(`✅ Correct! The species is ${gameState.turtle.species}`);
+    message.reply(`✅ Correct! The species is ${commonName} (${gameState.turtle.species.toLowerCase()}).`);
   }
 });
 
@@ -208,7 +212,7 @@ client.once('ready', async () => {
   const rawdata = fs.readFileSync('turtles.json');
   const turtles = JSON.parse(rawdata);
 
-  cron.schedule(timeStringToCron('2:46 PM'), async () => {
+  cron.schedule(timeStringToCron('12:00 PM'), async () => {
     const channel = await client.channels.fetch(CHANNEL_ID);
 
     // pick random turt :3
@@ -240,7 +244,7 @@ client.once('ready', async () => {
     });
 
     // 1 hour to end game
-    setTimeout(() => endGame(channel), 1 * 60 * 1000);
+    setTimeout(() => endGame(channel), 60 * 60 * 1000);
   }, {
     timezone: "America/Los_Angeles" // PST
   });
