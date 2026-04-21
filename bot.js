@@ -1,4 +1,4 @@
-require('dotenv').config();
+﻿require('dotenv').config();
 const { Client, GatewayIntentBits } = require('discord.js');
 const cron = require('node-cron');
 const fs = require('fs');
@@ -6,8 +6,8 @@ const fs = require('fs');
 function normalizeName(value) {
   return String(value || '')
     .toLowerCase()
-    .replace(/’|‘|“|”/g, "'")
-    .replace(/[��`�]/g, "'")
+    .replace(/â€™|â€˜|â€œ|â€/g, "'")
+    .replace(/[\u2018\u2019`\u00B4]/g, "'")
     .normalize('NFKD')
     .replace(/[\u0300-\u036f]/g, '')
     .replace(/[^a-z0-9]+/g, ' ')
@@ -101,6 +101,13 @@ const client = new Client({
 
 const TOKEN = process.env.DISCORD_BOT_TOKEN;
 const CHANNEL_ID = '1489014569220444251';
+const GAME_TIMEZONE = 'America/Los_Angeles';
+const DAILY_GAME_TIME = '12:00 PM';
+const DEFAULT_GAME_DURATION_MS = 60 * 60 * 1000;
+const START_COMMAND = '!startgame';
+
+let turtles = [];
+let gameEndTimer = null;
 
 let gameState = {
   active: false,
@@ -119,8 +126,8 @@ function timeStringToCron(timeString) {
     throw new Error(`Invalid time format: "${timeString}". Use format like "2:52 PM" or "14:52"`);
   }
 
-  let hour = parseInt(match[1], 10);
-  const minute = parseInt(match[2], 10);
+  let hour = Number.parseInt(match[1], 10);
+  const minute = Number.parseInt(match[2], 10);
   const period = match[3] ? match[3].toUpperCase() : null;
 
   if (period) {
@@ -136,6 +143,70 @@ function timeStringToCron(timeString) {
   }
 
   return `${minute} ${hour} * * *`;
+}
+
+function parseGameEndTimeInput(rawInput) {
+  const now = new Date();
+  const input = String(rawInput || '').trim();
+
+  if (!input) return new Date(now.getTime() + DEFAULT_GAME_DURATION_MS);
+
+  if (/^\d+$/.test(input)) {
+    const mins = Number.parseInt(input, 10);
+    if (mins <= 0) throw new Error('Minutes must be greater than 0.');
+    return new Date(now.getTime() + (mins * 60 * 1000));
+  }
+
+  const durationMatch = input.match(/^(\d+)\s*(m|min|mins|minute|minutes|h|hr|hrs|hour|hours)$/i);
+  if (durationMatch) {
+    const amount = Number.parseInt(durationMatch[1], 10);
+    const unit = durationMatch[2].toLowerCase();
+    if (amount <= 0) throw new Error('Duration must be greater than 0.');
+    const isHours = ['h', 'hr', 'hrs', 'hour', 'hours'].includes(unit);
+    const ms = isHours ? amount * 60 * 60 * 1000 : amount * 60 * 1000;
+    return new Date(now.getTime() + ms);
+  }
+
+  const timeMatch = input.match(/^(\d{1,2}):(\d{2})\s*(am|pm|AM|PM)?$/);
+  if (timeMatch) {
+    let hour = Number.parseInt(timeMatch[1], 10);
+    const minute = Number.parseInt(timeMatch[2], 10);
+    const meridiem = timeMatch[3] ? timeMatch[3].toUpperCase() : null;
+
+    if (meridiem) {
+      if (hour < 1 || hour > 12) throw new Error('12-hour time must use an hour from 1 to 12.');
+      if (meridiem === 'PM' && hour !== 12) hour += 12;
+      if (meridiem === 'AM' && hour === 12) hour = 0;
+    } else if (hour < 0 || hour > 23) {
+      throw new Error('24-hour time must use an hour from 0 to 23.');
+    }
+
+    if (minute < 0 || minute > 59) throw new Error('Minutes must be between 0 and 59.');
+
+    const endAt = new Date(now);
+    endAt.setHours(hour, minute, 0, 0);
+    if (endAt <= now) {
+      endAt.setDate(endAt.getDate() + 1);
+    }
+    return endAt;
+  }
+
+  throw new Error('Invalid end time. Use minutes (45), duration (45m/2h), or clock time (3:30 PM or 15:30).');
+}
+
+function clearGameEndTimer() {
+  if (gameEndTimer) {
+    clearTimeout(gameEndTimer);
+    gameEndTimer = null;
+  }
+}
+
+function scheduleGameEnd(channel, endAt) {
+  clearGameEndTimer();
+  const delayMs = Math.max(1000, endAt.getTime() - Date.now());
+  gameEndTimer = setTimeout(() => {
+    endGame(channel).catch((err) => console.error('Failed to end game:', err));
+  }, delayMs);
 }
 
 async function getObservationImages(observationId) {
@@ -221,6 +292,7 @@ function isSpeciesGuessMatch(guessText, speciesName) {
 
 async function endGame(channel) {
   if (!gameState.active || !gameState.turtle) return;
+  clearGameEndTimer();
 
   const speciesDisplay = String(gameState.turtle.species || 'unknown species');
   const commonName = getCommonNameFromSpecies(speciesDisplay) || 'unknown turtle species';
@@ -239,11 +311,87 @@ async function endGame(channel) {
   gameState.guessedSpecies = null;
 }
 
-client.on('messageCreate', async (message) => {
-  if (!gameState.active || message.author.bot) return;
-  if (!message || !gameState.turtle) return;
+async function startGame(channel, endAt) {
+  if (gameState.active) {
+    await channel.send('A game is already active. Please wait for it to end before starting another.');
+    return false;
+  }
 
-  const guess = String(message.content || '');
+  if (!Array.isArray(turtles) || turtles.length === 0) {
+    await channel.send('Unable to start game: turtle data is not loaded.');
+    return false;
+  }
+
+  const turtle = turtles[Math.floor(Math.random() * turtles.length)];
+
+  gameState = {
+    active: true,
+    turtle,
+    guessedSex: null,
+    guessedSpecies: null
+  };
+
+  let imageUrls = [];
+  try {
+    const occurrenceId = String(turtle.occurrenceID || '');
+    const parts = occurrenceId.split('/');
+    const id = parts[parts.length - 1];
+
+    if (id) {
+      imageUrls = await getObservationImages(id);
+
+      if (!turtle.sex) {
+        turtle.sex = await getObservationSex(id);
+      }
+    }
+  } catch (err) {
+    console.error('Failed to fetch images:', err);
+  }
+
+  const actualEndAt = endAt instanceof Date ? endAt : new Date(Date.now() + DEFAULT_GAME_DURATION_MS);
+  scheduleGameEnd(channel, actualEndAt);
+
+  await channel.send({
+    content: `What kind of turtle is this? (Species/Sex)\nGame ends at ${actualEndAt.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}.`,
+    files: imageUrls
+  });
+
+  return true;
+}
+
+client.on('messageCreate', async (message) => {
+  if (message.author.bot) return;
+  if (!message) return;
+
+  const rawContent = String(message.content || '').trim();
+  const lowerContent = rawContent.toLowerCase();
+
+  if (lowerContent.startsWith(START_COMMAND)) {
+    if (message.channelId !== CHANNEL_ID) {
+      await message.reply('Please start games in the configured turtle game channel.');
+      return;
+    }
+
+    const param = rawContent.slice(START_COMMAND.length).trim();
+
+    let endAt;
+    try {
+      endAt = parseGameEndTimeInput(param);
+    } catch (err) {
+      await message.reply(`Could not parse end time: ${err.message}`);
+      return;
+    }
+
+    const started = await startGame(message.channel, endAt);
+    if (started) {
+      await message.reply('Started a new turtle game.');
+    }
+    return;
+  }
+
+  if (!gameState.active || !gameState.turtle) return;
+
+  const guess = rawContent;
 
   function escapeRegExp(str) {
     return String(str).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -273,47 +421,13 @@ client.once('ready', async () => {
   console.log(`Logged in as ${client.user.tag}!`);
 
   const rawdata = fs.readFileSync('turtles.json');
-  const turtles = JSON.parse(rawdata);
+  turtles = JSON.parse(rawdata);
 
-  cron.schedule(timeStringToCron('12:00 PM'), async () => {
+  cron.schedule(timeStringToCron(DAILY_GAME_TIME), async () => {
     const channel = await client.channels.fetch(CHANNEL_ID);
-
-    // Pick a random turtle record.
-    const turtle = turtles[Math.floor(Math.random() * turtles.length)];
-
-    gameState = {
-      active: true,
-      turtle,
-      guessedSex: null,
-      guessedSpecies: null
-    };
-
-    let imageUrls = [];
-    try {
-      const occurrenceId = String(turtle.occurrenceID || '');
-      const parts = occurrenceId.split('/');
-      const id = parts[parts.length - 1];
-
-      if (id) {
-        imageUrls = await getObservationImages(id);
-
-        if (!turtle.sex) {
-          turtle.sex = await getObservationSex(id);
-        }
-      }
-    } catch (err) {
-      console.error('Failed to fetch images:', err);
-    }
-
-    await channel.send({
-      content: 'What kind of turtle is this? (Species/Sex)',
-      files: imageUrls
-    });
-
-    // 1 hour to end game.
-    setTimeout(() => endGame(channel), 60 * 60 * 1000);
+    await startGame(channel, new Date(Date.now() + DEFAULT_GAME_DURATION_MS));
   }, {
-    timezone: 'America/Los_Angeles'
+    timezone: GAME_TIMEZONE
   });
 });
 
