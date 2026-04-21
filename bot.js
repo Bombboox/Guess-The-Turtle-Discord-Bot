@@ -383,9 +383,6 @@ client.on('messageCreate', async (message) => {
     }
 
     const started = await startGame(message.channel, endAt);
-    if (started) {
-      await message.reply('Started a new turtle game.');
-    }
     return;
   }
 
