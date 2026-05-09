@@ -120,8 +120,6 @@ const REDDIT_POST_TIME = '7:00 PM';
 const DEFAULT_GAME_DURATION_MS = 60 * 60 * 1000;
 const START_COMMAND = '!startgame';
 const LEADERBOARD_COMMAND = '!leaderboard';
-const REDDIT_DEBUG_COMMAND = '!reddit';
-const REDDIT_DEBUG_COMMAND_ENABLED = true;
 
 let turtles = [];
 
@@ -154,38 +152,6 @@ async function initializeDatabase() {
     console.log('Leaderboard rows:', rows.rows);
   } catch (err) {
     console.error('Error initializing database:', err);
-  }
-}
-
-async function postDailyReddit() {
-  try {
-    const response = await fetch('https://old.reddit.com/r/turtle/top.json?t=day&limit=10', {
-      headers: {
-        'User-Agent': 'TurtleBot/1.0 (by u/BooxOD)'
-      }
-    });
-    if (!response.ok) throw new Error(`Reddit API response: ${response.status}`);
-    
-    const data = await response.json();
-    const posts = data.data.children.map(p => p.data);
-
-    // find first post with a direct image
-    const post = posts.find(p =>
-      p.url && (p.url.endsWith('.jpg') || p.url.endsWith('.png') || p.url.endsWith('.gif') || p.url.includes('i.redd.it'))
-    );
-
-    if (!post) {
-      throw new Error('No image posts found in the top 10 from today');
-    }
-
-    const channel = await client.channels.fetch(REDDIT_CHANNEL_ID);
-    await channel.send({
-      content: `🐢 **${post.title}**`,
-      files: [post.url]
-    });
-  } catch (err) {
-    console.error('Error fetching reddit post:', err);
-    throw err;
   }
 }
 
@@ -498,19 +464,6 @@ client.on('messageCreate', async (message) => {
     return;
   }
 
-  // Handle Reddit debug command
-  if (REDDIT_DEBUG_COMMAND_ENABLED && lowerContent.startsWith(REDDIT_DEBUG_COMMAND)) {
-    try {
-      await message.reply('Fetching top turtle post from Reddit...');
-      await postDailyReddit();
-      await message.reply('✅ Reddit post sent successfully!');
-    } catch (err) {
-      console.error('Error posting Reddit:', err);
-      await message.reply(`❌ Error fetching Reddit post: ${err.message}`);
-    }
-    return;
-  }
-
   // Handle startgame command - only in unofficial channel
   if (lowerContent.startsWith(START_COMMAND)) {
     if (message.channelId !== UNOFFICIAL_GAME_CHANNEL_ID) {
@@ -597,17 +550,6 @@ client.once('ready', async () => {
       await channel.send(leaderboardMessage);
     } catch (err) {
       console.error('Error sending leaderboard:', err);
-    }
-  }, {
-    timezone: GAME_TIMEZONE
-  });
-
-  // Daily Reddit post at 7 PM
-  cron.schedule(timeStringToCron(REDDIT_POST_TIME), async () => {
-    try {
-      await postDailyReddit();
-    } catch (err) {
-      console.error('Error posting daily Reddit:', err);
     }
   }, {
     timezone: GAME_TIMEZONE
