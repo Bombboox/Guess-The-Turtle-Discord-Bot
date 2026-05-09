@@ -160,6 +160,8 @@ async function initializeDatabase() {
 async function postDailyReddit() {
   try {
     const response = await fetch('https://www.reddit.com/r/turtle/top.json?t=day&limit=10');
+    if (!response.ok) throw new Error(`Reddit API response: ${response.status}`);
+    
     const data = await response.json();
     const posts = data.data.children.map(p => p.data);
 
@@ -169,8 +171,7 @@ async function postDailyReddit() {
     );
 
     if (!post) {
-      console.log('No image posts found today');
-      return;
+      throw new Error('No image posts found in the top 10 from today');
     }
 
     const channel = await client.channels.fetch(REDDIT_CHANNEL_ID);
@@ -180,6 +181,7 @@ async function postDailyReddit() {
     });
   } catch (err) {
     console.error('Error fetching reddit post:', err);
+    throw err;
   }
 }
 
