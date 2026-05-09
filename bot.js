@@ -120,6 +120,8 @@ const REDDIT_POST_TIME = '7:00 PM';
 const DEFAULT_GAME_DURATION_MS = 60 * 60 * 1000;
 const START_COMMAND = '!startgame';
 const LEADERBOARD_COMMAND = '!leaderboard';
+const REDDIT_DEBUG_COMMAND = '!reddit';
+const REDDIT_DEBUG_COMMAND_ENABLED = true;
 
 let turtles = [];
 
@@ -487,6 +489,19 @@ client.on('messageCreate', async (message) => {
   if (lowerContent.startsWith(LEADERBOARD_COMMAND)) {
     const leaderboardMessage = await formatLeaderboardMessage();
     await message.reply(leaderboardMessage);
+    return;
+  }
+
+  // Handle Reddit debug command
+  if (REDDIT_DEBUG_COMMAND_ENABLED && lowerContent.startsWith(REDDIT_DEBUG_COMMAND)) {
+    try {
+      await message.reply('Fetching top turtle post from Reddit...');
+      await postDailyReddit();
+      await message.reply('✅ Reddit post sent successfully!');
+    } catch (err) {
+      console.error('Error posting Reddit:', err);
+      await message.reply(`❌ Error fetching Reddit post: ${err.message}`);
+    }
     return;
   }
 
