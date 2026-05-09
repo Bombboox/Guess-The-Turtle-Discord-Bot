@@ -159,7 +159,11 @@ async function initializeDatabase() {
 
 async function postDailyReddit() {
   try {
-    const response = await fetch('https://www.reddit.com/r/turtle/top.json?t=day&limit=10');
+    const response = await fetch('https://www.reddit.com/r/turtle/top.json?t=day&limit=10', {
+      headers: {
+        'User-Agent': 'TurtleBot/1.0 (by u/BooxOD)'
+      }
+    });
     if (!response.ok) throw new Error(`Reddit API response: ${response.status}`);
     
     const data = await response.json();
