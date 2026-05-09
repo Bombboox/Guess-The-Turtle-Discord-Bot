@@ -112,9 +112,11 @@ const TOKEN = process.env.DISCORD_BOT_TOKEN;
 const OFFICIAL_GAME_CHANNEL_ID = '1489014569220444251';
 const UNOFFICIAL_GAME_CHANNEL_ID = '1502479312647880788';
 const LEADERBOARD_CHANNEL_ID = '1502479349754888242';
+const REDDIT_CHANNEL_ID = '1068714206129569873';
 const GAME_TIMEZONE = 'America/Los_Angeles';
 const DAILY_GAME_TIME = '12:00 PM';
 const LEADERBOARD_TIME = '1:05 PM';
+const REDDIT_POST_TIME = '7:00 PM';
 const DEFAULT_GAME_DURATION_MS = 60 * 60 * 1000;
 const START_COMMAND = '!startgame';
 const LEADERBOARD_COMMAND = '!leaderboard';
@@ -150,6 +152,32 @@ async function initializeDatabase() {
     console.log('Leaderboard rows:', rows.rows);
   } catch (err) {
     console.error('Error initializing database:', err);
+  }
+}
+
+async function postDailyReddit() {
+  try {
+    const response = await fetch('https://www.reddit.com/r/turtle/top.json?t=day&limit=10');
+    const data = await response.json();
+    const posts = data.data.children.map(p => p.data);
+
+    // find first post with a direct image
+    const post = posts.find(p =>
+      p.url && (p.url.endsWith('.jpg') || p.url.endsWith('.png') || p.url.endsWith('.gif') || p.url.includes('i.redd.it'))
+    );
+
+    if (!post) {
+      console.log('No image posts found today');
+      return;
+    }
+
+    const channel = await client.channels.fetch(REDDIT_CHANNEL_ID);
+    await channel.send({
+      content: `🐢 **${post.title}**`,
+      files: [post.url]
+    });
+  } catch (err) {
+    console.error('Error fetching reddit post:', err);
   }
 }
 
@@ -548,6 +576,17 @@ client.once('ready', async () => {
       await channel.send(leaderboardMessage);
     } catch (err) {
       console.error('Error sending leaderboard:', err);
+    }
+  }, {
+    timezone: GAME_TIMEZONE
+  });
+
+  // Daily Reddit post at 7 PM
+  cron.schedule(timeStringToCron(REDDIT_POST_TIME), async () => {
+    try {
+      await postDailyReddit();
+    } catch (err) {
+      console.error('Error posting daily Reddit:', err);
     }
   }, {
     timezone: GAME_TIMEZONE
