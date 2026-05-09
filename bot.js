@@ -143,17 +143,11 @@ const fetch = (...args) => import('node-fetch').then(({ default: fetchFn }) => f
 // Database initialization
 async function initializeDatabase() {
   try {
-    const result = await pool.query(`
-      CREATE TABLE IF NOT EXISTS leaderboard (
-        id SERIAL PRIMARY KEY,
-        discord_user_id TEXT UNIQUE NOT NULL,
-        username TEXT NOT NULL,
-        turtles_guessed INTEGER DEFAULT 0,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      )
-    `);
-    console.log('Leaderboard table initialized');
+    const dbCheck = await pool.query('SELECT current_database(), current_user');
+    console.log('Connected to:', dbCheck.rows[0]);
+
+    const rows = await pool.query('SELECT * FROM leaderboard');
+    console.log('Leaderboard rows:', rows.rows);
   } catch (err) {
     console.error('Error initializing database:', err);
   }
