@@ -2,6 +2,15 @@
 const { Client, GatewayIntentBits } = require('discord.js');
 const cron = require('node-cron');
 const fs = require('fs');
+const { Pool } = require('pg');
+
+const pool = new Pool({
+  user: process.env.DB_USER,
+  host: process.env.DB_HOST || 'localhost',
+  database: process.env.DB_NAME || 'turtle_bot',
+  password: process.env.DB_PASSWORD,
+  port: process.env.DB_PORT || 5432,
+});
 
 function normalizeName(value) {
   return String(value || '')
@@ -100,23 +109,108 @@ const client = new Client({
 });
 
 const TOKEN = process.env.DISCORD_BOT_TOKEN;
-const CHANNEL_ID = '1489014569220444251';
+const OFFICIAL_GAME_CHANNEL_ID = '1489014569220444251';
+const UNOFFICIAL_GAME_CHANNEL_ID = '1502479312647880788';
+const LEADERBOARD_CHANNEL_ID = '1502479349754888242';
 const GAME_TIMEZONE = 'America/Los_Angeles';
 const DAILY_GAME_TIME = '12:00 PM';
+const LEADERBOARD_TIME = '1:05 PM';
 const DEFAULT_GAME_DURATION_MS = 60 * 60 * 1000;
 const START_COMMAND = '!startgame';
+const LEADERBOARD_COMMAND = '!leaderboard';
 
 let turtles = [];
-let gameEndTimer = null;
 
-let gameState = {
-  active: false,
-  turtle: null,
-  guessedSex: null,
-  guessedSpecies: null
+let gameStates = {
+  official: {
+    active: false,
+    turtle: null,
+    guessedSex: null,
+    guessedSpecies: null,
+    gameEndTimer: null
+  },
+  unofficial: {
+    active: false,
+    turtle: null,
+    guessedSex: null,
+    guessedSpecies: null,
+    gameEndTimer: null
+  }
 };
 
 const fetch = (...args) => import('node-fetch').then(({ default: fetchFn }) => fetchFn(...args));
+
+// Database initialization
+async function initializeDatabase() {
+  try {
+    const result = await pool.query(`
+      CREATE TABLE IF NOT EXISTS leaderboard (
+        id SERIAL PRIMARY KEY,
+        discord_user_id TEXT UNIQUE NOT NULL,
+        username TEXT NOT NULL,
+        turtles_guessed INTEGER DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+    console.log('Leaderboard table initialized');
+  } catch (err) {
+    console.error('Error initializing database:', err);
+  }
+}
+
+// Leaderboard operations
+async function updateLeaderboardForUser(userId, username) {
+  try {
+    const userExists = await pool.query(
+      'SELECT * FROM leaderboard WHERE discord_user_id = $1',
+      [userId]
+    );
+
+    if (userExists.rows.length === 0) {
+      // Create new entry
+      await pool.query(
+        'INSERT INTO leaderboard (discord_user_id, username, turtles_guessed) VALUES ($1, $2, $3)',
+        [userId, username, 1]
+      );
+    } else {
+      // Update existing entry
+      await pool.query(
+        'UPDATE leaderboard SET turtles_guessed = turtles_guessed + 1, username = $1, updated_at = CURRENT_TIMESTAMP WHERE discord_user_id = $2',
+        [username, userId]
+      );
+    }
+  } catch (err) {
+    console.error('Error updating leaderboard:', err);
+  }
+}
+
+async function getLeaderboard() {
+  try {
+    const result = await pool.query(
+      'SELECT username, turtles_guessed FROM leaderboard ORDER BY turtles_guessed DESC LIMIT 10'
+    );
+    return result.rows;
+  } catch (err) {
+    console.error('Error fetching leaderboard:', err);
+    return [];
+  }
+}
+
+async function formatLeaderboardMessage() {
+  const leaderboard = await getLeaderboard();
+  if (leaderboard.length === 0) {
+    return 'No leaderboard entries yet!';
+  }
+
+  let message = '🐢 **TURTLE LEADERBOARD** 🐢\n\n';
+  leaderboard.forEach((entry, index) => {
+    const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index + 1}.`;
+    message += `${medal} **${entry.username}** - ${entry.turtles_guessed} turtles guessed\n`;
+  });
+
+  return message;
+}
 
 function timeStringToCron(timeString) {
   const timeRegex = /^(\d{1,2}):(\d{2})\s*(am|pm|AM|PM)?$/;
@@ -194,18 +288,18 @@ function parseGameEndTimeInput(rawInput) {
   throw new Error('Invalid end time. Use minutes (45), duration (45m/2h), or clock time (3:30 PM or 15:30).');
 }
 
-function clearGameEndTimer() {
-  if (gameEndTimer) {
-    clearTimeout(gameEndTimer);
-    gameEndTimer = null;
+function clearGameEndTimer(gameType) {
+  if (gameStates[gameType].gameEndTimer) {
+    clearTimeout(gameStates[gameType].gameEndTimer);
+    gameStates[gameType].gameEndTimer = null;
   }
 }
 
-function scheduleGameEnd(channel, endAt) {
-  clearGameEndTimer();
+function scheduleGameEnd(channel, endAt, gameType) {
+  clearGameEndTimer(gameType);
   const delayMs = Math.max(1000, endAt.getTime() - Date.now());
-  gameEndTimer = setTimeout(() => {
-    endGame(channel).catch((err) => console.error('Failed to end game:', err));
+  gameStates[gameType].gameEndTimer = setTimeout(() => {
+    endGame(channel, gameType).catch((err) => console.error('Failed to end game:', err));
   }, delayMs);
 }
 
@@ -290,29 +384,29 @@ function isSpeciesGuessMatch(guessText, speciesName) {
   return false;
 }
 
-async function endGame(channel) {
-  if (!gameState.active || !gameState.turtle) return;
-  clearGameEndTimer();
+async function endGame(channel, gameType) {
+  if (!gameStates[gameType].active || !gameStates[gameType].turtle) return;
+  clearGameEndTimer(gameType);
 
-  const speciesDisplay = String(gameState.turtle.species || 'unknown species');
+  const speciesDisplay = String(gameStates[gameType].turtle.species || 'unknown species');
   const commonName = getCommonNameFromSpecies(speciesDisplay) || 'unknown turtle species';
-  const sexDisplay = String(gameState.turtle.sex || 'Unknown').toLowerCase();
+  const sexDisplay = String(gameStates[gameType].turtle.sex || 'Unknown').toLowerCase();
 
   let result = `Time's up!\nToday's turtle was a ${sexDisplay} ${commonName} (${speciesDisplay}).\n`;
 
-  if (gameState.guessedSex) result += `Congrats to ${gameState.guessedSex} for guessing the sex!\n`;
-  if (gameState.guessedSpecies) result += `Congrats to ${gameState.guessedSpecies} for guessing the species!\n`;
+  if (gameStates[gameType].guessedSex) result += `Congrats to ${gameStates[gameType].guessedSex} for guessing the sex!\n`;
+  if (gameStates[gameType].guessedSpecies) result += `Congrats to ${gameStates[gameType].guessedSpecies} for guessing the species!\n`;
 
   await channel.send(result);
 
-  gameState.active = false;
-  gameState.turtle = null;
-  gameState.guessedSex = null;
-  gameState.guessedSpecies = null;
+  gameStates[gameType].active = false;
+  gameStates[gameType].turtle = null;
+  gameStates[gameType].guessedSex = null;
+  gameStates[gameType].guessedSpecies = null;
 }
 
-async function startGame(channel, endAt) {
-  if (gameState.active) {
+async function startGame(channel, endAt, gameType) {
+  if (gameStates[gameType].active) {
     await channel.send('A game is already active. Please wait for it to end before starting another.');
     return false;
   }
@@ -324,11 +418,12 @@ async function startGame(channel, endAt) {
 
   const turtle = turtles[Math.floor(Math.random() * turtles.length)];
 
-  gameState = {
+  gameStates[gameType] = {
     active: true,
     turtle,
     guessedSex: null,
-    guessedSpecies: null
+    guessedSpecies: null,
+    gameEndTimer: null
   };
 
   let imageUrls = [];
@@ -349,7 +444,7 @@ async function startGame(channel, endAt) {
   }
 
   const actualEndAt = endAt instanceof Date ? endAt : new Date(Date.now() + DEFAULT_GAME_DURATION_MS);
-  scheduleGameEnd(channel, actualEndAt);
+  scheduleGameEnd(channel, actualEndAt, gameType);
 
   await channel.send({
     content: `What kind of turtle is this? (Species/Sex)\nGame ends at ${actualEndAt.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}.`,
@@ -366,9 +461,17 @@ client.on('messageCreate', async (message) => {
   const rawContent = String(message.content || '').trim();
   const lowerContent = rawContent.toLowerCase();
 
+  // Handle leaderboard command
+  if (lowerContent.startsWith(LEADERBOARD_COMMAND)) {
+    const leaderboardMessage = await formatLeaderboardMessage();
+    await message.reply(leaderboardMessage);
+    return;
+  }
+
+  // Handle startgame command - only in unofficial channel
   if (lowerContent.startsWith(START_COMMAND)) {
-    if (message.channelId !== CHANNEL_ID) {
-      await message.reply('Please start games in the configured turtle game channel.');
+    if (message.channelId !== UNOFFICIAL_GAME_CHANNEL_ID) {
+      await message.reply('Please start games in the unofficial turtle game channel.');
       return;
     }
 
@@ -382,11 +485,15 @@ client.on('messageCreate', async (message) => {
       return;
     }
 
-    const started = await startGame(message.channel, endAt);
+    const started = await startGame(message.channel, endAt, 'unofficial');
     return;
   }
 
-  if (!gameState.active || !gameState.turtle) return;
+  // Handle guesses for both official and unofficial games
+  const gameType = message.channelId === OFFICIAL_GAME_CHANNEL_ID ? 'official' : 
+                   message.channelId === UNOFFICIAL_GAME_CHANNEL_ID ? 'unofficial' : null;
+
+  if (!gameType || !gameStates[gameType].active || !gameStates[gameType].turtle) return;
 
   const guess = rawContent;
 
@@ -394,22 +501,26 @@ client.on('messageCreate', async (message) => {
     return String(str).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   }
 
-  if (!gameState.guessedSex) {
-    const sexVal = normalizeName(gameState.turtle.sex || '');
+  if (!gameStates[gameType].guessedSex) {
+    const sexVal = normalizeName(gameStates[gameType].turtle.sex || '');
     const guessNorm = normalizeName(guess);
     if (sexVal && sexVal !== 'unknown') {
       const sexRegex = new RegExp(`\\b${escapeRegExp(sexVal)}\\b`);
       if (sexRegex.test(guessNorm)) {
-        gameState.guessedSex = message.author.username;
-        await message.reply(`Correct! The sex is ${gameState.turtle.sex}`);
+        gameStates[gameType].guessedSex = message.author.username;
+        await message.reply(`Correct! The sex is ${gameStates[gameType].turtle.sex}`);
       }
     }
   }
 
-  if (!gameState.guessedSpecies && isSpeciesGuessMatch(guess, gameState.turtle.species)) {
-    gameState.guessedSpecies = message.author.username;
-    const speciesDisplay = String(gameState.turtle.species || 'unknown species');
+  if (!gameStates[gameType].guessedSpecies && isSpeciesGuessMatch(guess, gameStates[gameType].turtle.species)) {
+    gameStates[gameType].guessedSpecies = message.author.username;
+    const speciesDisplay = String(gameStates[gameType].turtle.species || 'unknown species');
     const commonDisplay = getCommonNameFromSpecies(speciesDisplay) || 'unknown turtle species';
+    
+    // Update leaderboard when species is guessed
+    await updateLeaderboardForUser(message.author.id, message.author.username);
+    
     await message.reply(`Correct! The species is ${commonDisplay} (${speciesDisplay}).`);
   }
 });
@@ -417,12 +528,33 @@ client.on('messageCreate', async (message) => {
 client.once('ready', async () => {
   console.log(`Logged in as ${client.user.tag}!`);
 
+  // Initialize database
+  await initializeDatabase();
+
   const rawdata = fs.readFileSync('turtles.json');
   turtles = JSON.parse(rawdata);
 
+  // Daily official game at 12 PM
   cron.schedule(timeStringToCron(DAILY_GAME_TIME), async () => {
-    const channel = await client.channels.fetch(CHANNEL_ID);
-    await startGame(channel, new Date(Date.now() + DEFAULT_GAME_DURATION_MS));
+    try {
+      const channel = await client.channels.fetch(OFFICIAL_GAME_CHANNEL_ID);
+      await startGame(channel, new Date(Date.now() + DEFAULT_GAME_DURATION_MS), 'official');
+    } catch (err) {
+      console.error('Error starting official game:', err);
+    }
+  }, {
+    timezone: GAME_TIMEZONE
+  });
+
+  // Daily leaderboard display at 1:05 PM
+  cron.schedule(timeStringToCron(LEADERBOARD_TIME), async () => {
+    try {
+      const channel = await client.channels.fetch(LEADERBOARD_CHANNEL_ID);
+      const leaderboardMessage = await formatLeaderboardMessage();
+      await channel.send(leaderboardMessage);
+    } catch (err) {
+      console.error('Error sending leaderboard:', err);
+    }
   }, {
     timezone: GAME_TIMEZONE
   });
