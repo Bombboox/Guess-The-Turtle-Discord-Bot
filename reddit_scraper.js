@@ -29,6 +29,11 @@ async function scrapeRedditTopPost() {
     });
     console.log(await page.title());
     console.log(await page.content().then(c => c.slice(0, 500)));
+    await page.waitForTimeout(5000);
+    console.log(await page.evaluate(() => document.documentElement.outerHTML).then(html => html.slice(0, 500)));
+    console.log('Body after wait:');
+    const count = await page.evaluate(() => document.querySelectorAll('shreddit-post').length);
+    console.log('shreddit-post count:', count);
 
     console.log('Waiting for shreddit-post elements...');
     await page.waitForSelector("shreddit-post", { timeout: 100000 });
