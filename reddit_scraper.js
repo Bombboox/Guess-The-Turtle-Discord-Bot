@@ -53,7 +53,6 @@ function extractFromContent(content) {
   return { image, directLink, isGallery };
 }
 
-/** Fetch full post JSON from Reddit to get all gallery images or video URL */
 async function fetchPostJson(postUrl) {
   try {
     const path = postUrl
@@ -64,6 +63,9 @@ async function fetchPostJson(postUrl) {
     const res = await fetch(jsonUrl, {
       headers: { 'User-Agent': USER_AGENT },
     });
+
+    console.log(`fetchPostJson ${jsonUrl} -> ${res.status}`);  // ADD THIS
+
     if (!res.ok) return null;
 
     const data = await res.json();
