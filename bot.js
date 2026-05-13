@@ -249,20 +249,17 @@ async function postDailyRedditPost(channel) {
     // IMAGE CASE
     else if (topPost.images && topPost.images.length > 0) {
       console.log('Reddit post has images:', topPost.images);
+
+      // Send header first
+      await channel.send({ content: messageContent });
+
       const imagesToUse = topPost.images.slice(0, 4);
 
-      await channel.send({
-        content: messageContent
-      });
-      
-      imagesToUse.forEach((img, idx) => {
+      for (const img of imagesToUse) {
         if (img) {
-          let msg = `${img} `;
-          await channel.send({
-            content: messageContent
-          });
+          await channel.send({ content: img }); // send each image separately
         }
-      });
+      }
     }
     // NEITHER
     else {
