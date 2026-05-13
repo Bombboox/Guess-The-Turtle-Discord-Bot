@@ -260,20 +260,16 @@ async function postDailyRedditPost(channel) {
           await channel.send({ content: img }); // send each image separately
         }
       }
-
-      return;
     }
     // NEITHER
     else {
       if (postUrl) {
         messageContent += `\n\n🔗 [Post Link](${postUrl})`;
       }
+      await channel.send({
+        content: messageContent
+      });
     }
-
-    await channel.send({
-      content: messageContent
-    });
-
   } catch (err) {
     console.error('Error posting daily Reddit post:', err);
 
