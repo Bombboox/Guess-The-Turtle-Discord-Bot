@@ -242,7 +242,7 @@ async function postDailyRedditPost(channel) {
 
     // VIDEO CASE
     if (topPost.video && topPost.video.src) {
-      messageContent += `\n\n🎥 [Video Link](${postUrl})`;
+      messageContent += `[:](${video.src})`;
     }
 
     // IMAGE CASE
