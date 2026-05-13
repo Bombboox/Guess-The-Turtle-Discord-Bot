@@ -1,6 +1,7 @@
 const { chromium } = require("playwright");
 
 async function scrapeRedditTopPost() {
+  console.log('Starting Reddit scrape for /r/turtle top daily posts...');
   const browser = await chromium.launch({
     headless: true
   });
@@ -11,11 +12,15 @@ async function scrapeRedditTopPost() {
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/124 Safari/537.36"
     });
 
-    await page.goto("https://www.reddit.com/r/turtle/top/?t=day", {
+    const targetUrl = "https://www.reddit.com/r/turtle/top/?t=day";
+    console.log('Navigating to:', targetUrl);
+    await page.goto(targetUrl, {
       waitUntil: "networkidle"
     });
 
-    await page.waitForSelector("shreddit-post");
+    console.log('Waiting for shreddit-post elements...');
+    await page.waitForSelector("shreddit-post", { timeout: 15000 });
+    console.log('Found shreddit-post element(s). Scrolling to load content...');
     await page.evaluate(() => window.scrollBy(0, 1000));
     await page.waitForTimeout(2000);
 
@@ -86,10 +91,38 @@ async function scrapeRedditTopPost() {
       });
     });
 
+    console.log(`Scraped ${posts.length} Reddit post(s).`);
+    posts.slice(0, 3).forEach((post, index) => {
+      console.log(`Post #${index + 1}:`, {
+        title: post.title,
+        author: post.author,
+        score: post.score,
+        comments: post.comments,
+        url: post.url,
+        imageCount: post.images.length,
+        hasVideo: !!post.video?.src
+      });
+    });
+
     return posts;
   } finally {
     await browser.close();
   }
+}
+
+if (require.main === module) {
+  scrapeRedditTopPost()
+    .then((posts) => {
+      if (!posts || posts.length === 0) {
+        console.warn('No posts were scraped. The page structure may have changed.');
+      } else {
+        console.log('Scrape succeeded. First post payload:', posts[0]);
+      }
+    })
+    .catch((err) => {
+      console.error('Scrape failed:', err);
+      process.exitCode = 1;
+    });
 }
 
 module.exports = { scrapeRedditTopPost };
