@@ -1,139 +1,64 @@
-const { chromium } = require("playwright");
+const RSSParser = require('rss-parser');
 
-async function scrapeRedditTopPost() {
-  console.log('Starting Reddit scrape for /r/turtle top daily posts...');
-  const browser = await chromium.launch({
-    headless: true,
-    args: [
-      '--no-sandbox',
-      '--disable-setuid-sandbox',
-      '--disable-dev-shm-usage',
-    ]
-  });
-
-  try {
-    const page = await browser.newPage({
-      userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
-    });
-
-    const targetUrl = "https://new.reddit.com/r/turtle/top/?t=day";
-    console.log('Navigating to:', targetUrl);
-    await page.goto(targetUrl, {
-      waitUntil: "networkidle"
-    });
-    console.log(await page.title());
-    console.log(await page.content().then(c => c.slice(0, 500)));
-    await page.waitForTimeout(5000);
-    console.log(await page.evaluate(() => document.documentElement.outerHTML).then(html => html.slice(0, 500)));
-    console.log('Body after wait:');
-    const count = await page.evaluate(() => document.querySelectorAll('shreddit-post').length);
-    console.log('shreddit-post count:', count);
-
-    console.log('Waiting for shreddit-post elements...');
-    await page.waitForSelector("shreddit-post", { timeout: 100000 });
-    console.log('Found shreddit-post element(s). Scrolling to load content...');
-    await page.evaluate(() => window.scrollBy(0, 1000));
-    await page.waitForTimeout(2000);
-
-    const posts = await page.evaluate(() => {
-      function deepQuery(root, selector) {
-        const direct = root.querySelector(selector);
-        if (direct) return direct;
-
-        for (const child of root.querySelectorAll("*")) {
-          if (child.shadowRoot) {
-            const found = deepQuery(child.shadowRoot, selector);
-            if (found) return found;
-          }
-        }
-        return null;
-      }
-
-      function deepQueryAll(root, selector) {
-        const results = [];
-        results.push(...root.querySelectorAll(selector));
-
-        for (const child of root.querySelectorAll("*")) {
-          if (child.shadowRoot) {
-            results.push(...deepQueryAll(child.shadowRoot, selector));
-          }
-        }
-        return results;
-      }
-
-      const els = document.querySelectorAll("shreddit-post");
-
-      return [...els].slice(0, 10).map((el) => {
-        const allImages = deepQueryAll(el, "img")
-          .filter(img => {
-            const src = img.src || "";
-            const alt = img.alt || "";
-            const cls = img.className || "";
-
-            return (
-              !src.includes("styles.redditmedia.com") &&
-              !src.includes("reddit-static.com/avatars") &&
-              !alt.toLowerCase().includes("avatar") &&
-              !alt.toLowerCase().includes("profile") &&
-              !cls.includes("avatar") &&
-              img.width > 50 &&
-              img.height > 50
-            );
-          })
-          .map(img => img.src || img.getAttribute("srcset")?.split(" ")[0] || null)
-          .filter(Boolean)
-          .slice(1);
-
-        const video = deepQuery(el, "video");
-        const videoSource = deepQuery(el, "video source");
-
-        return {
-          title: el.getAttribute("post-title"),
-          author: el.getAttribute("author"),
-          score: el.getAttribute("score"),
-          comments: el.getAttribute("comment-count"),
-          url: el.getAttribute("permalink"),
-          images: allImages,
-          video: video ? {
-            src: video.src || videoSource?.src || null,
-            poster: video.poster
-          } : null,
-        };
-      });
-    });
-
-    console.log(`Scraped ${posts.length} Reddit post(s).`);
-    posts.slice(0, 3).forEach((post, index) => {
-      console.log(`Post #${index + 1}:`, {
-        title: post.title,
-        author: post.author,
-        score: post.score,
-        comments: post.comments,
-        url: post.url,
-        imageCount: post.images.length,
-        hasVideo: !!post.video?.src
-      });
-    });
-
-    return posts;
-  } finally {
-    await browser.close();
+const parser = new RSSParser({
+  customFields: {
+    item: [['media:thumbnail', 'thumbnail', { keepArray: false }]]
   }
+});
+
+function decodeHtml(html) {
+  return html
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#32;/g, ' ')
+    .replace(/&#39;/g, "'");
 }
 
-if (require.main === module) {
-  scrapeRedditTopPost()
-    .then((posts) => {
-      if (!posts || posts.length === 0) {
-        console.warn('No posts were scraped. The page structure may have changed.');
-      } else {
-        console.log('Scrape succeeded. First post payload:', posts[0]);
-      }
-    })
-    .catch((err) => {
-      console.error('Scrape failed:', err);
-      process.exitCode = 1;
-    });
+function extractFromContent(content) {
+  if (!content) return { image: null, link: null };
+
+  // Extract direct media link (i.redd.it or v.redd.it)
+  const linkMatch = content.match(/href="(https?:\/\/(?:i|v)\.redd\.it\/[^"]+)"/);
+  const link = linkMatch ? decodeHtml(linkMatch[1]) : null;
+
+  // Extract preview image (preview.redd.it only, not external-preview)
+  const imgMatch = content.match(/src="(https?:\/\/preview\.redd\.it\/[^"]+)"/);
+  const image = imgMatch ? decodeHtml(imgMatch[1]) : null;
+
+  return { image, link };
+}
+
+async function scrapeRedditTopPost() {
+  console.log('Fetching r/turtle top posts via RSS...');
+
+  const feed = await parser.parseURL('https://www.reddit.com/r/turtle/top/.rss?t=day');
+
+  return feed.items.map(item => {
+    const { image, link } = extractFromContent(item.content);
+
+    const isVideo = link && link.includes('v.redd.it');
+    const isImage = link && link.includes('i.redd.it');
+
+    // Thumbnail from media:thumbnail field
+    const thumbnail = item.thumbnail?.$?.url
+      ? decodeHtml(item.thumbnail.$.url)
+      : null;
+
+    return {
+      title: item.title,
+      author: (item.author || '').replace('/u/', ''),
+      score: null, // not in RSS feed
+      comments: null, // not in RSS feed
+      url: item.link?.replace('https://www.reddit.com', '') || null,
+      images: isImage && image ? [image] : (thumbnail && !isVideo ? [thumbnail] : []),
+      video: isVideo ? {
+        src: link,
+        poster: thumbnail
+      } : null
+    };
+  });
 }
 
 module.exports = { scrapeRedditTopPost };
