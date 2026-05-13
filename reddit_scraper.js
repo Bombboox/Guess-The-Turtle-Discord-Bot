@@ -48,7 +48,10 @@ async function fetchVideoUrl(postUrl) {
     const jsonUrl = `https://old.reddit.com${path}.json`;
 
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 5000);
+    const timeout = setTimeout(() => {
+    console.log('fetchVideoUrl: timed out, aborting');
+      controller.abort();
+    }, 5000); 
 
     const agent = new HttpsProxyAgent('http://hcjmywsp:kawunm1yqpx3@31.59.20.176:6754');
 
