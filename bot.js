@@ -255,13 +255,8 @@ async function postDailyRedditPost(channel) {
           messageContent += `\n[Image ${idx + 1}](${img})`;
         }
       });
-
-      if (postUrl) {
-        messageContent += `\n\n🔗 [Post Link](${postUrl})`;
-      }
     }
-
-    // FALLBACK (no media)
+    // NEITHER
     else {
       if (postUrl) {
         messageContent += `\n\n🔗 [Post Link](${postUrl})`;
