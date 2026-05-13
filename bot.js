@@ -242,9 +242,10 @@ async function postDailyRedditPost(channel) {
 
     // VIDEO CASE
     if (topPost.video && topPost.video.src) {
-      messageContent += `[:](${topPost.video.src})`;
+      await channel.send({ content: messageContent });
+      await channel.send({ content: topPost.video.src }); // plain URL on its own = Discord embeds it
+      return;
     }
-
     // IMAGE CASE
     else if (topPost.images && topPost.images.length > 0) {
       const imagesToUse = topPost.images.slice(0, 4);

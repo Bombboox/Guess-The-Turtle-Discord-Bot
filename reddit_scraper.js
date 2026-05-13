@@ -56,7 +56,10 @@ async function fetchVideoUrl(postUrl) {
     const agent = new HttpsProxyAgent('http://hcjmywsp:kawunm1yqpx3@31.59.20.176:6754');
 
     const res = await fetch(jsonUrl, {
-      headers: { 'User-Agent': USER_AGENT },
+      headers: { 
+        'User-Agent': USER_AGENT,
+        'Accept': 'application/json'
+      },
       signal: controller.signal,
       agent
     });
