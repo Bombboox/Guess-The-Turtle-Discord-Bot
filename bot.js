@@ -260,6 +260,8 @@ async function postDailyRedditPost(channel) {
           await channel.send({ content: img }); // send each image separately
         }
       }
+
+      return;
     }
     // NEITHER
     else {
