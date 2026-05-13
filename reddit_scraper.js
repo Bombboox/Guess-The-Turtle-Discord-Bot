@@ -44,7 +44,7 @@ async function fetchVideoUrl(postUrl) {
   try {
     // Strip domain, keep only the path
     const path = postUrl.replace('https://old.reddit.com', '').replace('https://www.reddit.com', '');
-    const jsonUrl = `https://www.reddit.com${path}.json`;
+    const jsonUrl = `https://old.reddit.com${path}.json`;
 
     const res = await fetch(jsonUrl, {
       headers: { 'User-Agent': USER_AGENT }
