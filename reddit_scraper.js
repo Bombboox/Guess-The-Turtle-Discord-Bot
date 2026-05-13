@@ -42,15 +42,23 @@ function extractFromContent(content) {
 
 async function fetchVideoUrl(postUrl) {
   try {
-    // Strip domain, keep only the path
     const path = postUrl.replace('https://old.reddit.com', '').replace('https://www.reddit.com', '');
     const jsonUrl = `https://old.reddit.com${path}.json`;
 
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+
     const res = await fetch(jsonUrl, {
-      headers: { 'User-Agent': USER_AGENT }
+      headers: { 'User-Agent': USER_AGENT },
+      signal: controller.signal
     });
 
-    if (!res.ok) return null;
+    clearTimeout(timeout);
+
+    if (!res.ok) {
+      console.log(`fetchVideoUrl: got ${res.status} for ${jsonUrl}`);
+      return null;
+    }
 
     const data = await res.json();
     const postData = data[0]?.data?.children[0]?.data;
