@@ -248,6 +248,7 @@ async function postDailyRedditPost(channel) {
     }
     // IMAGE CASE
     else if (topPost.images && topPost.images.length > 0) {
+      console.log('Reddit post has images:', topPost.images);
       const imagesToUse = topPost.images.slice(0, 4);
 
       imagesToUse.forEach((img, idx) => {
