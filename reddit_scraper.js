@@ -11,7 +11,12 @@ async function scrapeRedditTopPost() {
       '--disable-dev-shm-usage',
       '--disable-gpu',
       '--single-process'
-    ]
+    ],
+    proxy: {
+      server: 'http://31.59.20.176:6754',
+      username: 'hcjmywsp',
+      password: 'kawunm1yqpx3'
+    }
   });
 
   try {
