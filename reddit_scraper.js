@@ -9,8 +9,6 @@ async function scrapeRedditTopPost() {
       '--no-sandbox',
       '--disable-setuid-sandbox',
       '--disable-dev-shm-usage',
-      '--disable-gpu',
-      '--single-process'
     ],
     proxy: {
       server: 'http://31.59.20.176:6754',
@@ -33,7 +31,7 @@ async function scrapeRedditTopPost() {
     console.log(await page.content().then(c => c.slice(0, 500)));
 
     console.log('Waiting for shreddit-post elements...');
-    await page.waitForSelector("shreddit-post", { timeout: 15000 });
+    await page.waitForSelector("shreddit-post", { timeout: 100000 });
     console.log('Found shreddit-post element(s). Scrolling to load content...');
     await page.evaluate(() => window.scrollBy(0, 1000));
     await page.waitForTimeout(2000);
