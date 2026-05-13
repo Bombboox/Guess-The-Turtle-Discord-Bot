@@ -58,11 +58,12 @@ const { HttpsProxyAgent } = require('https-proxy-agent');
 const PROXY_URL = `http://hcjmywsp:kawunm1yqpx3@31.59.20.176:6754`;
 const proxyAgent = new HttpsProxyAgent(PROXY_URL);
 
-async function fetchPostJson(postUrl) {
+async function fetchPostJson(postUrl, retry = 3) {
   try {
     const path = postUrl
       .replace('https://old.reddit.com', '')
       .replace('https://www.reddit.com', '');
+
     const jsonUrl = `https://old.reddit.com${path}.json`;
 
     const res = await fetch(jsonUrl, {
@@ -71,10 +72,16 @@ async function fetchPostJson(postUrl) {
     });
 
     console.log(`fetchPostJson ${jsonUrl} -> ${res.status}`);
+
+    if (res.status === 429 && retry > 0) {
+      const wait = 2000 * (4 - retry);
+      await new Promise(r => setTimeout(r, wait));
+      return fetchPostJson(postUrl, retry - 1);
+    }
+
     if (!res.ok) return null;
 
-    const data = await res.json();
-    return data[0]?.data?.children[0]?.data ?? null;
+    return await res.json();
   } catch (e) {
     console.error('fetchPostJson error:', e.message);
     return null;
