@@ -4,7 +4,6 @@ async function scrapeRedditTopPost() {
   console.log('Starting Reddit scrape for /r/turtle top daily posts...');
   const browser = await chromium.launch({
     headless: true,
-    executablePath: '/usr/bin/chromium-browser',
     args: [
       '--no-sandbox',
       '--disable-setuid-sandbox',
