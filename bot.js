@@ -221,7 +221,7 @@ function normalizeUrl(url) {
 
 async function postDailyRedditPost(channel) {
   try {
-    const posts = await scrapeRedditTopPosts();
+    const posts = await scrapeRedditTopPosts();  
 
     if (!posts || posts.length === 0) {
       await channel.send('Could not fetch Reddit posts at this time.');
@@ -237,43 +237,43 @@ async function postDailyRedditPost(channel) {
 
     const postUrl = normalizeUrl(topPost.url);
 
-    let headerMessage = `🐢 **Turtle Post of the Day** 🐢\n\n` +
+    let messageContent = `🐢 **Turtle Post of the Day** 🐢\n\n` +
       `**${topPost.title}** ~ ${topPost.author || 'unknown'}`;
-
-    // Send the header first
-    await channel.send({ content: headerMessage });
 
     // VIDEO CASE
     if (topPost.video && topPost.video.src) {
-      await channel.send({ content: topPost.video.src });
+      await channel.send({ content: messageContent });
+      await channel.send({ content: topPost.video.src }); // plain URL on its own = Discord embeds it
       return;
     }
-
     // IMAGE CASE
-    if (topPost.images && topPost.images.length > 0) {
+    else if (topPost.images && topPost.images.length > 0) {
       console.log('Reddit post has images:', topPost.images);
-
-      // Limit to 4 images max
       const imagesToUse = topPost.images.slice(0, 4);
 
-      for (const img of imagesToUse) {
+      await channel.send({
+        content: messageContent
+      });
+      
+      imagesToUse.forEach((img, idx) => {
         if (img) {
-          await channel.send({ content: img });
+          let msg = `${img} `;
+          await channel.send({
+            content: messageContent
+          });
         }
-      }
-
-      // Optionally, include the post link at the end
+      });
+    }
+    // NEITHER
+    else {
       if (postUrl) {
-        await channel.send({ content: `🔗 [Post Link](${postUrl})` });
+        messageContent += `\n\n🔗 [Post Link](${postUrl})`;
       }
-
-      return;
     }
 
-    // NEITHER images nor video
-    if (postUrl) {
-      await channel.send({ content: `🔗 [Post Link](${postUrl})` });
-    }
+    await channel.send({
+      content: messageContent
+    });
 
   } catch (err) {
     console.error('Error posting daily Reddit post:', err);
@@ -287,6 +287,7 @@ async function postDailyRedditPost(channel) {
     }
   }
 }
+
 
 function timeStringToCron(timeString) {
   const timeRegex = /^(\d{1,2}):(\d{2})\s*(am|pm|AM|PM)?$/;
