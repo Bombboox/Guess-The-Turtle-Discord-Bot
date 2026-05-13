@@ -53,6 +53,11 @@ function extractFromContent(content) {
   return { image, directLink, isGallery };
 }
 
+const { HttpsProxyAgent } = require('https-proxy-agent');
+
+const PROXY_URL = `http://hcjmywsp:kawunm1yqpx3@31.59.20.176:6754`;
+const proxyAgent = new HttpsProxyAgent(PROXY_URL);
+
 async function fetchPostJson(postUrl) {
   try {
     const path = postUrl
@@ -61,11 +66,11 @@ async function fetchPostJson(postUrl) {
     const jsonUrl = `https://old.reddit.com${path}.json`;
 
     const res = await fetch(jsonUrl, {
+      agent: proxyAgent,
       headers: { 'User-Agent': USER_AGENT },
     });
 
-    console.log(`fetchPostJson ${jsonUrl} -> ${res.status}`);  // ADD THIS
-
+    console.log(`fetchPostJson ${jsonUrl} -> ${res.status}`);
     if (!res.ok) return null;
 
     const data = await res.json();
