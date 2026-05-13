@@ -40,17 +40,22 @@ function extractFromContent(content) {
   return { image, link };
 }
 
+const { HttpsProxyAgent } = require('https-proxy-agent');
+
 async function fetchVideoUrl(postUrl) {
   try {
     const path = postUrl.replace('https://old.reddit.com', '').replace('https://www.reddit.com', '');
     const jsonUrl = `https://old.reddit.com${path}.json`;
 
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+    const timeout = setTimeout(() => controller.abort(), 5000);
+
+    const agent = new HttpsProxyAgent('http://username:password@host:port');
 
     const res = await fetch(jsonUrl, {
       headers: { 'User-Agent': USER_AGENT },
-      signal: controller.signal
+      signal: controller.signal,
+      agent
     });
 
     clearTimeout(timeout);
