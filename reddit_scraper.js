@@ -3,7 +3,15 @@ const { chromium } = require("playwright");
 async function scrapeRedditTopPost() {
   console.log('Starting Reddit scrape for /r/turtle top daily posts...');
   const browser = await chromium.launch({
-    headless: true
+    headless: true,
+    executablePath: '/usr/bin/chromium-browser',
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage',
+      '--disable-gpu',
+      '--single-process'
+    ]
   });
 
   try {
@@ -14,9 +22,11 @@ async function scrapeRedditTopPost() {
 
     const targetUrl = "https://www.reddit.com/r/turtle/top/?t=day";
     console.log('Navigating to:', targetUrl);
-    await page.goto(targetUrl, {
+    await page.goto("https://www.reddit.com/r/turtle/top/?t=day", {
       waitUntil: "networkidle"
     });
+    console.log(await page.title());
+    console.log(await page.content().then(c => c.slice(0, 500)));
 
     console.log('Waiting for shreddit-post elements...');
     await page.waitForSelector("shreddit-post", { timeout: 15000 });
