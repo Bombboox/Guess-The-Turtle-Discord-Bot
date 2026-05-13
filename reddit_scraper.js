@@ -6,7 +6,11 @@ const parser = new RSSParser({
   },
   headers: {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-    'Accept': 'application/rss+xml, application/xml, text/xml'
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+    'Accept-Language': 'en-US,en;q=0.9',
+    'Cache-Control': 'no-cache',
+    'Pragma': 'no-cache',
+    'Upgrade-Insecure-Requests': '1'
   }
 });
 
@@ -37,7 +41,7 @@ function extractFromContent(content) {
 async function scrapeRedditTopPost() {
   console.log('Fetching r/turtle top posts via RSS...');
 
-  const feed = await parser.parseURL('https://www.reddit.com/r/turtle/top/.rss?t=day');
+  const feed = await parser.parseURL('https://old.reddit.com/r/turtle/top/.rss?t=day'); 
 
   return feed.items.map(item => {
     const { image, link } = extractFromContent(item.content);
