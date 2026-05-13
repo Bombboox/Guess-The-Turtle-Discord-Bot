@@ -213,9 +213,16 @@ async function formatLeaderboardMessage() {
   return message;
 }
 
+function normalizeUrl(url) {
+  if (!url) return null;
+  if (url.startsWith('http')) return url;
+  return `https://reddit.com${url}`;
+}
+
 async function postDailyRedditPost(channel) {
   try {
     const posts = await scrapeRedditTopPost();
+
     if (!posts || posts.length === 0) {
       await channel.send('Could not fetch Reddit posts at this time.');
       return;
@@ -223,51 +230,54 @@ async function postDailyRedditPost(channel) {
 
     const topPost = posts[0];
 
-    // Build message content with title and author
-    const messageContent = `🐢 **Turtle Post of the Day** 🐢\n\n**${topPost.title}** ~ ${topPost.author}`;
-
-    // Prepare embeds and files
-    let embeds = [];
-    let files = [];
-
-    // If there's a video, create an embed with it
-    if (topPost.video && topPost.video.src) {
-      const videoEmbed = new EmbedBuilder()
-        .setTitle('Video')
-        .setURL(`https://reddit.com${topPost.url}`)
-        .setColor(0xFF4500);
-
-      if (topPost.video.poster) {
-        videoEmbed.setImage(topPost.video.poster);
-      }
-
-      embeds.push(videoEmbed);
-    } else if (topPost.images && topPost.images.length > 0) {
-      // If no video, use images (up to 4)
-      const imagesToUse = topPost.images.slice(0, 4);
-      
-      // For Discord, we need to send images differently
-      // We'll include image URLs in the message content
-      let imageText = '\n\n';
-      imagesToUse.forEach((img, idx) => {
-        imageText += `[Image ${idx + 1}](${img})\n`;
-      });
-
-      return await channel.send({
-        content: messageContent + imageText,
-        embeds: embeds
-      });
+    if (!topPost || !topPost.title) {
+      await channel.send('Invalid Reddit post data.');
+      return;
     }
 
-    // Send message with video embed
+    const postUrl = normalizeUrl(topPost.url);
+
+    let messageContent = `🐢 **Turtle Post of the Day** 🐢\n\n` +
+      `**${topPost.title}** ~ ${topPost.author || 'unknown'}`;
+
+    // VIDEO CASE
+    if (topPost.video && topPost.video.src) {
+      messageContent += `\n\n🎥 [Video Link](${postUrl})`;
+    }
+
+    // IMAGE CASE
+    else if (topPost.images && topPost.images.length > 0) {
+      const imagesToUse = topPost.images.slice(0, 4);
+
+      imagesToUse.forEach((img, idx) => {
+        if (img) {
+          messageContent += `\n[Image ${idx + 1}](${img})`;
+        }
+      });
+
+      if (postUrl) {
+        messageContent += `\n\n🔗 [Post Link](${postUrl})`;
+      }
+    }
+
+    // FALLBACK (no media)
+    else {
+      if (postUrl) {
+        messageContent += `\n\n🔗 [Post Link](${postUrl})`;
+      }
+    }
+
     await channel.send({
-      content: messageContent,
-      embeds: embeds
+      content: messageContent
     });
+
   } catch (err) {
     console.error('Error posting daily Reddit post:', err);
+
     try {
-      await channel.send('Error fetching today\'s top Reddit post. Please try again later.' + err.message);
+      await channel.send(
+        `Error fetching today's top Reddit post. Please try again later.\n\`${err.message}\``
+      );
     } catch (sendErr) {
       console.error('Error sending error message:', sendErr);
     }
