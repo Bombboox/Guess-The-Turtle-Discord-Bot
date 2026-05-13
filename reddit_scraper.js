@@ -9,12 +9,7 @@ async function scrapeRedditTopPost() {
       '--no-sandbox',
       '--disable-setuid-sandbox',
       '--disable-dev-shm-usage',
-    ],
-    proxy: {
-      server: 'http://31.59.20.176:6754',
-      username: 'hcjmywsp',
-      password: 'kawunm1yqpx3'
-    }
+    ]
   });
 
   try {
