@@ -3,7 +3,7 @@ const { Client, GatewayIntentBits, EmbedBuilder } = require('discord.js');
 const cron = require('node-cron');
 const fs = require('fs');
 const { Pool } = require('pg');
-const { scrapeRedditTopPosts } = require('./reddit_scraper');
+const { scrapeRedditTopPosts } = require('./app');
 
 const pool = new Pool({
   user: process.env.DB_USER,
@@ -253,7 +253,7 @@ async function postDailyRedditPost(channel) {
 
       imagesToUse.forEach((img, idx) => {
         if (img) {
-          messageContent += `\n[Image ${idx + 1}](${img})`;
+          messageContent += `${img} `;
         }
       });
     }
