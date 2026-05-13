@@ -267,7 +267,7 @@ async function postDailyRedditPost(channel) {
   } catch (err) {
     console.error('Error posting daily Reddit post:', err);
     try {
-      await channel.send('Error fetching today\'s top Reddit post. Please try again later.');
+      await channel.send('Error fetching today\'s top Reddit post. Please try again later.' + err.message);
     } catch (sendErr) {
       console.error('Error sending error message:', sendErr);
     }
