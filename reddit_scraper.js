@@ -50,7 +50,7 @@ async function fetchVideoUrl(postUrl) {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 5000);
 
-    const agent = new HttpsProxyAgent('http://username:password@host:port');
+    const agent = new HttpsProxyAgent('http://hcjmywsp:kawunm1yqpx3@31.59.20.176:6754');
 
     const res = await fetch(jsonUrl, {
       headers: { 'User-Agent': USER_AGENT },
