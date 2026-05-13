@@ -3,7 +3,7 @@ const { Client, GatewayIntentBits, EmbedBuilder } = require('discord.js');
 const cron = require('node-cron');
 const fs = require('fs');
 const { Pool } = require('pg');
-const { scrapeRedditTopPost } = require('./reddit_scraper');
+const { scrapeRedditTopPosts } = require('./reddit_scraper');
 
 const pool = new Pool({
   user: process.env.DB_USER,
@@ -221,7 +221,7 @@ function normalizeUrl(url) {
 
 async function postDailyRedditPost(channel) {
   try {
-    const posts = await scrapeRedditTopPost();
+    const posts = await scrapeRedditTopPosts();  
 
     if (!posts || posts.length === 0) {
       await channel.send('Could not fetch Reddit posts at this time.');
