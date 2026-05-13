@@ -1,8 +1,9 @@
 ﻿require('dotenv').config();
-const { Client, GatewayIntentBits } = require('discord.js');
+const { Client, GatewayIntentBits, EmbedBuilder } = require('discord.js');
 const cron = require('node-cron');
 const fs = require('fs');
 const { Pool } = require('pg');
+const { scrapeRedditTopPost } = require('./reddit_scraper');
 
 const pool = new Pool({
   user: process.env.DB_USER,
@@ -116,10 +117,14 @@ const REDDIT_CHANNEL_ID = '1068714206129569873';
 const GAME_TIMEZONE = 'America/Los_Angeles';
 const DAILY_GAME_TIME = '12:00 PM';
 const LEADERBOARD_TIME = '1:05 PM';
-const REDDIT_POST_TIME = '7:00 PM';
+const REDDIT_POST_TIME = '8:00 AM';
 const DEFAULT_GAME_DURATION_MS = 60 * 60 * 1000;
 const START_COMMAND = '!startgame';
 const LEADERBOARD_COMMAND = '!leaderboard';
+const REDDIT_COMMAND = '!reddit';
+
+// Reddit command settings
+const REDDIT_COMMAND_ENABLED = true;
 
 let turtles = [];
 
@@ -207,6 +212,68 @@ async function formatLeaderboardMessage() {
 
   return message;
 }
+
+async function postDailyRedditPost(channel) {
+  try {
+    const posts = await scrapeRedditTopPost();
+    if (!posts || posts.length === 0) {
+      await channel.send('Could not fetch Reddit posts at this time.');
+      return;
+    }
+
+    const topPost = posts[0];
+
+    // Build message content with title and author
+    const messageContent = `🐢 **Turtle Post of the Day** 🐢\n\n**${topPost.title}** ~ ${topPost.author}`;
+
+    // Prepare embeds and files
+    let embeds = [];
+    let files = [];
+
+    // If there's a video, create an embed with it
+    if (topPost.video && topPost.video.src) {
+      const videoEmbed = new EmbedBuilder()
+        .setTitle('Video')
+        .setURL(`https://reddit.com${topPost.url}`)
+        .setColor(0xFF4500);
+
+      if (topPost.video.poster) {
+        videoEmbed.setImage(topPost.video.poster);
+      }
+
+      embeds.push(videoEmbed);
+    } else if (topPost.images && topPost.images.length > 0) {
+      // If no video, use images (up to 4)
+      const imagesToUse = topPost.images.slice(0, 4);
+      
+      // For Discord, we need to send images differently
+      // We'll include image URLs in the message content
+      let imageText = '\n\n';
+      imagesToUse.forEach((img, idx) => {
+        imageText += `[Image ${idx + 1}](${img})\n`;
+      });
+
+      return await channel.send({
+        content: messageContent + imageText,
+        embeds: embeds
+      });
+    }
+
+    // Send message with video embed
+    await channel.send({
+      content: messageContent,
+      embeds: embeds
+    });
+  } catch (err) {
+    console.error('Error posting daily Reddit post:', err);
+    try {
+      await channel.send('Error fetching today\'s top Reddit post. Please try again later.');
+    } catch (sendErr) {
+      console.error('Error sending error message:', sendErr);
+    }
+  }
+}
+
 
 function timeStringToCron(timeString) {
   const timeRegex = /^(\d{1,2}):(\d{2})\s*(am|pm|AM|PM)?$/;
@@ -464,6 +531,23 @@ client.on('messageCreate', async (message) => {
     return;
   }
 
+  // Handle reddit command - for testing
+  if (lowerContent.startsWith(REDDIT_COMMAND)) {
+    if (!REDDIT_COMMAND_ENABLED) {
+      await message.reply('Reddit command is currently disabled.');
+      return;
+    }
+
+    try {
+      const channel = await client.channels.fetch(REDDIT_CHANNEL_ID);
+      await postDailyRedditPost(channel);
+    } catch (err) {
+      console.error('Error handling reddit command:', err);
+      await message.reply('Error fetching Reddit post. Please try again later.');
+    }
+    return;
+  }
+
   // Handle startgame command - only in unofficial channel
   if (lowerContent.startsWith(START_COMMAND)) {
     if (message.channelId !== UNOFFICIAL_GAME_CHANNEL_ID) {
@@ -550,6 +634,18 @@ client.once('ready', async () => {
       await channel.send(leaderboardMessage);
     } catch (err) {
       console.error('Error sending leaderboard:', err);
+    }
+  }, {
+    timezone: GAME_TIMEZONE
+  });
+
+  // Daily Reddit post at 8 PM
+  cron.schedule(timeStringToCron(REDDIT_POST_TIME), async () => {
+    try {
+      const channel = await client.channels.fetch(REDDIT_CHANNEL_ID);
+      await postDailyRedditPost(channel);
+    } catch (err) {
+      console.error('Error posting daily Reddit post:', err);
     }
   }, {
     timezone: GAME_TIMEZONE
