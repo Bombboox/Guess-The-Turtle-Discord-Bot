@@ -16,13 +16,12 @@ async function scrapeRedditTopPost() {
 
   try {
     const page = await browser.newPage({
-      userAgent:
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/124 Safari/537.36"
+      userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
     });
 
-    const targetUrl = "https://www.reddit.com/r/turtle/top/?t=day";
+    const targetUrl = "https://new.reddit.com/r/turtle/top/?t=day";
     console.log('Navigating to:', targetUrl);
-    await page.goto("https://www.reddit.com/r/turtle/top/?t=day", {
+    await page.goto(targetUrl, {
       waitUntil: "networkidle"
     });
     console.log(await page.title());
