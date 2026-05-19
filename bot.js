@@ -177,7 +177,7 @@ async function updateLeaderboardForUser(userId, username) {
     } else {
       // Update existing entry
       await pool.query(
-        'UPDATE leaderboard SET turtles_guessed = turtles_guessed + 1, username = $1, updated_at = CURRENT_TIMESTAMP WHERE discord_user_id = $2',
+        'UPDATE leaderboard SET turtles_guessed = turtles_guessed + 1, username = $1 WHERE discord_user_id = $2',
         [username, userId]
       );
     }
@@ -456,7 +456,7 @@ function isSpeciesGuessMatch(guessText, speciesName) {
   return false;
 }
 
-async function endGame(channel, gameType) {
+async function endGame(channel, gameType, endedEarly = false) {
   if (!gameStates[gameType].active || !gameStates[gameType].turtle) return;
   clearGameEndTimer(gameType);
 
@@ -464,7 +464,11 @@ async function endGame(channel, gameType) {
   const commonName = getCommonNameFromSpecies(speciesDisplay) || 'unknown turtle species';
   const sexDisplay = String(gameStates[gameType].turtle.sex || 'Unknown').toLowerCase();
 
-  let result = `Time's up!\nToday's turtle was a ${sexDisplay} ${commonName} (${speciesDisplay}).\n`;
+  const header = endedEarly
+    ? "Both sex and species have been guessed!"
+    : "Time's up!";
+
+  let result = `${header}\nToday's turtle was a ${sexDisplay} ${commonName} (${speciesDisplay}).\n`;
 
   if (gameStates[gameType].guessedSex) result += `Congrats to ${gameStates[gameType].guessedSex} for guessing the sex!\n`;
   if (gameStates[gameType].guessedSpecies) result += `Congrats to ${gameStates[gameType].guessedSpecies} for guessing the species!\n`;
@@ -598,7 +602,10 @@ client.on('messageCreate', async (message) => {
       if (sexRegex.test(guessNorm)) {
         gameStates[gameType].guessedSex = message.author.username;
         await message.reply(`Correct! The sex is ${gameStates[gameType].turtle.sex}`);
-      }
+        if (gameStates[gameType].guessedSpecies) {
+          await endGame(message.channel, gameType, true);
+          return;
+        }      }
     }
   }
 
@@ -611,6 +618,11 @@ client.on('messageCreate', async (message) => {
     await updateLeaderboardForUser(message.author.id, message.author.username);
     
     await message.reply(`Correct! The species is ${commonDisplay} (${speciesDisplay}).`);
+
+    if (gameStates[gameType].guessedSex) {
+      await endGame(message.channel, gameType, true);
+      return;
+    }
   }
 });
 
