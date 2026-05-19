@@ -124,7 +124,7 @@ const LEADERBOARD_COMMAND = '!leaderboard';
 const REDDIT_COMMAND = '!reddit';
 
 // Reddit command settings
-const REDDIT_COMMAND_ENABLED = false;
+const REDDIT_COMMAND_ENABLED = true;
 
 let turtles = [];
 

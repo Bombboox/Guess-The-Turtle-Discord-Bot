@@ -55,7 +55,7 @@ function extractFromContent(content) {
 
 const { HttpsProxyAgent } = require('https-proxy-agent');
 
-const PROXY_URL = `http://hcjmywsp:kawunm1yqpx3@142.111.48.253:7030`;
+const PROXY_URL = `http://hcjmywsp:kawunm1yqpx3@23.95.150.145:6114`;
 const proxyAgent = new HttpsProxyAgent(PROXY_URL);
 
 async function fetchPostJson(postUrl) {
@@ -67,7 +67,14 @@ async function fetchPostJson(postUrl) {
 
     const res = await fetch(jsonUrl, {
       agent: proxyAgent,
-      headers: { 'User-Agent': USER_AGENT },
+      headers: { 
+        'User-Agent': USER_AGENT, 
+        Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'Cache-Control': 'no-cache',
+        Pragma: 'no-cache',
+        'Upgrade-Insecure-Requests': '1',
+      },
     });
     if (!res.ok) return null;
 
