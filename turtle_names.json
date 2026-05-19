@@ -373,11 +373,11 @@
   },
   {
     "scientific": "Elsya schultzei",
-    "common": "Schultz’s snapping turtle"
+    "common": "Schultz's snapping turtle"
   },
   {
     "scientific": "Elsya strilingi",
-    "common": "Stirling’s snapping turtle"
+    "common": "Stirling's snapping turtle"
   },
   {
     "scientific": "Elusor macrurus",
@@ -385,7 +385,11 @@
   },
   {
     "scientific": "Emydoidea blandingii",
-    "common": "Blanding’s turtle"
+    "common": "Blanding's turtle"
+  },
+  {
+    "scientific": "Emys blandingii",
+    "common": "Blanding's turtle"
   },
   {
     "scientific": "Emydura australis",
@@ -736,7 +740,7 @@
     "common": "Narrow-brested snake-neccked turtle"
   },
   {
-    "scientific": "Malacemys terrapin",
+    "scientific": "Malaclemys terrapin",
     "common": "Diamondback terrapin"
   },
   {
@@ -1044,6 +1048,10 @@
     "common": "Texas cooter"
   },
   {
+    "scientific": "Pseudemys peninsularis",
+    "common": "Peninsula cooter"
+  },
+  {
     "scientific": "Pyxidea mouhotii",
     "common": "Keeled box turtle"
   },
@@ -1152,6 +1160,10 @@
     "common": "Common musk turtle"
   },
   {
+    "scientific": "Sternotherus peltifer",
+    "common": "Stripe-neck musk turtle"
+  },
+  {
     "scientific": "Stigmochelys pardalis",
     "common": "Leopard tortoise"
   },
@@ -1172,12 +1184,20 @@
     "common": "Ornate box turtle"
   },
   {
+    "scientific": "Terrapene triunguis",
+    "common": "Three-toed box turtle"
+  },
+  {
     "scientific": "Testudo graeca",
     "common": "Mediterranean spur-thighed tortoise"
   },
   {
     "scientific": "Testudo harmanni",
-    "common": "Hermann’s tortoise"
+    "common": "Hermann's tortoise"
+  },
+  {
+    "scientific": "Testudo hermanni",
+    "common": "Hermann's tortoise"
   },
   {
     "scientific": "Testudo kazachstanica",
@@ -1185,7 +1205,7 @@
   },
   {
     "scientific": "Testudo kleinmanni",
-    "common": "Klenmann’s tortoise"
+    "common": "Klenmann's tortoise"
   },
   {
     "scientific": "Testudo marginata",
@@ -1213,7 +1233,7 @@
   },
   {
     "scientific": "Trachemys  dorbigni",
-    "common": "Orbigny’s slider turtle"
+    "common": "Orbigny's slider turtle"
   },
   {
     "scientific": "Trachemys  emolli",
@@ -1228,15 +1248,15 @@
     "common": "Northweast Mexican slider turtle"
   },
   {
-    "scientific": "Trachemys  ornata",
+    "scientific": "Trachemys ornata",
     "common": "Ornate slider turtle"
   },
   {
-    "scientific": "Trachemys  scripta",
+    "scientific": "Trachemys scripta",
     "common": "Slider turtle"
   },
   {
-    "scientific": "Trachemys  stejnegeri",
+    "scientific": "Trachemys stejnegeri",
     "common": "Central Antillean slider Turtle"
   },
   {

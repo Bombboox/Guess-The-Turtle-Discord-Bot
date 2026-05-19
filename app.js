@@ -55,7 +55,7 @@ function extractFromContent(content) {
 
 const { HttpsProxyAgent } = require('https-proxy-agent');
 
-const PROXY_URL = `http://hcjmywsp:kawunm1yqpx3@31.59.20.176:6754`;
+const PROXY_URL = `http://hcjmywsp:kawunm1yqpx3@142.111.48.253:7030`;
 const proxyAgent = new HttpsProxyAgent(PROXY_URL);
 
 async function fetchPostJson(postUrl) {
