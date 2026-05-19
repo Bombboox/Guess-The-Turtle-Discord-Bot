@@ -76,6 +76,7 @@ async function fetchPostJson(postUrl) {
         'Upgrade-Insecure-Requests': '1',
       },
     });
+    console.log('STATUS:', res.status, jsonUrl);
     if (!res.ok) return null;
 
     const data = await res.json();
