@@ -159,59 +159,50 @@ async function scrapeRedditTopPosts() {
     'https://old.reddit.com/r/turtle/top/.rss?t=day'
   );
 
-  const posts = await Promise.all(
-    feed.items.map(async (item) => {
-      const { image, directLink, isGallery } = extractFromContent(
-        item.content
-      );
+  const posts = [];
+  for (const item of feed.items) {
+    const { image, directLink, isGallery } = extractFromContent(item.content);
 
-      const isVideo =
-        directLink && directLink.includes('v.redd.it');
-      const isDirectImage =
-        directLink && directLink.includes('i.redd.it');
+    const isVideo = directLink && directLink.includes('v.redd.it');
+    const isDirectImage = directLink && directLink.includes('i.redd.it');
 
-      // Decode thumbnail URL from media:thumbnail attribute
-      const thumbnailRaw = item.thumbnail?.$?.url
-        ? decodeHtml(item.thumbnail.$.url)
-        : null;
+    const thumbnailRaw = item.thumbnail?.$?.url
+      ? decodeHtml(item.thumbnail.$.url)
+      : null;
 
-      const postUrl = item.link ?? null;
+    const postUrl = item.link ?? null;
+    const postData = postUrl ? await fetchPostJson(postUrl) : null;
 
-      const needsJson = !!postUrl;
-      const postData = needsJson && postUrl ? await fetchPostJson(postUrl) : null;
+    // delay between each fetch
+    await new Promise(r => setTimeout(r, 1500));
 
-      // --- Images ---
-      let images = [];
+    let images = [];
+    if (isGallery && postData) {
+      images = extractImagesFromPostData(postData);
+    } else if (postData) {
+      images = extractImagesFromPostData(postData);
+    } else if (isDirectImage) {
+      images = [directLink];
+    } else if (image) {
+      images = [image];
+    } else if (thumbnailRaw) {
+      images = [thumbnailRaw];
+    }
 
-      if (isGallery && postData) {
-        images = extractImagesFromPostData(postData);
-      } else if (postData) {
-        // Always prefer full-res from post JSON
-        images = extractImagesFromPostData(postData);
-      } else if (isDirectImage) {
-        images = [directLink];
-      } else if (image) {
-        images = [image];
-      } else if (thumbnailRaw) {
-        images = [thumbnailRaw];
-      }
+    let video = null;
+    if (isVideo && postData) {
+      video = extractVideoFromPostData(postData);
+      if (video) video.poster = thumbnailRaw;
+    }
 
-      // --- Video ---
-      let video = null;
-      if (isVideo && postData) {
-        video = extractVideoFromPostData(postData);
-        if (video) video.poster = thumbnailRaw;
-      }
-
-      return {
-        title: item.title,
-        author: (item.author ?? '').replace('/u/', ''),
-        url: postUrl,
-        images,
-        video,
-      };
-    })
-  );
+    posts.push({
+      title: item.title,
+      author: (item.author ?? '').replace('/u/', ''),
+      url: postUrl,
+      images,
+      video,
+    });
+  }
 
   return posts;
 }
