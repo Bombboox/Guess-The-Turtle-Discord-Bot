@@ -1,5 +1,10 @@
 const RSSParser = require('rss-parser');
 
+const { HttpsProxyAgent } = require('https-proxy-agent');
+
+const PROXY_URL = `http://hcjmywsp:kawunm1yqpx3@23.95.150.145:6114`;
+const proxyAgent = new HttpsProxyAgent(PROXY_URL);
+
 const USER_AGENT =
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36';
 
@@ -15,6 +20,7 @@ const parser = new RSSParser({
     Pragma: 'no-cache',
     'Upgrade-Insecure-Requests': '1',
   },
+  requestOptions: {agent: proxyAgent}
 });
 
 const fetch = (...args) =>
@@ -52,11 +58,6 @@ function extractFromContent(content) {
 
   return { image, directLink, isGallery };
 }
-
-const { HttpsProxyAgent } = require('https-proxy-agent');
-
-const PROXY_URL = `http://hcjmywsp:kawunm1yqpx3@23.95.150.145:6114`;
-const proxyAgent = new HttpsProxyAgent(PROXY_URL);
 
 async function fetchPostJson(postUrl) {
   try {
