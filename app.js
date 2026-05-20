@@ -78,7 +78,13 @@ async function fetchPostJson(postUrl) {
       },
     });
     console.log('STATUS:', res.status, jsonUrl);
-    if (!res.ok) return null;
+    if (!res.ok) {
+      const denyReason = res.headers.get('x-deny-reason');
+      const body = await res.text();
+      console.error('DENY REASON:', denyReason);
+      console.error('RESPONSE BODY:', body.slice(0, 500)); // first 500 chars
+      return null;
+    }
 
     const data = await res.json();
     return data[0]?.data?.children[0]?.data ?? null;
