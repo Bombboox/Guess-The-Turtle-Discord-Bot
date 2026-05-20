@@ -1,26 +1,42 @@
 const RSSParser = require('rss-parser');
-
 const { HttpsProxyAgent } = require('https-proxy-agent');
 
 const PROXY_URL = `http://hcjmywsp:kawunm1yqpx3@23.95.150.145:6114`;
 const proxyAgent = new HttpsProxyAgent(PROXY_URL);
 
-const USER_AGENT =
-  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36';
+// Rotate between a few common user agents to look less repetitive
+const USER_AGENTS = [
+  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36',
+  'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:125.0) Gecko/20100101 Firefox/125.0',
+];
+
+function randomUserAgent() {
+  return USER_AGENTS[Math.floor(Math.random() * USER_AGENTS.length)];
+}
+
+function randomDelay(min = 800, max = 2500) {
+  const ms = Math.floor(Math.random() * (max - min + 1)) + min;
+  return new Promise(r => setTimeout(r, ms));
+}
 
 const parser = new RSSParser({
   customFields: {
     item: [['media:thumbnail', 'thumbnail', { keepArray: false }]],
   },
   headers: {
-    'User-Agent': USER_AGENT,
+    'User-Agent': randomUserAgent(),
     Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-    'Accept-Language': 'en-US,en;q=0.9',
-    'Cache-Control': 'no-cache',
-    Pragma: 'no-cache',
+    'Accept-Language': 'en-US,en;q=0.5',
+    'Accept-Encoding': 'gzip, deflate, br',
+    Connection: 'keep-alive',
     'Upgrade-Insecure-Requests': '1',
+    'Sec-Fetch-Dest': 'document',
+    'Sec-Fetch-Mode': 'navigate',
+    'Sec-Fetch-Site': 'none',
+    'Sec-Fetch-User': '?1',
   },
-  requestOptions: {agent: proxyAgent}
+  requestOptions: { agent: proxyAgent },
 });
 
 const fetch = (...args) =>
@@ -39,22 +55,17 @@ function decodeHtml(html) {
 function extractFromContent(content) {
   if (!content) return { image: null, directLink: null, isGallery: false };
 
-  // Direct image/video link (i.redd.it or v.redd.it)
   const linkMatch = content.match(
     /href="(https?:\/\/(?:i|v)\.redd\.it\/[^"]+)"/
   );
   const directLink = linkMatch ? decodeHtml(linkMatch[1]) : null;
 
-  // Preview image (higher quality than thumbnail)
   const imgMatch = content.match(
     /src="(https?:\/\/preview\.redd\.it\/[^"]+)"/
   );
   const image = imgMatch ? decodeHtml(imgMatch[1]) : null;
 
-  // Gallery posts link to reddit.com/gallery/...
-  const isGallery = /href="https?:\/\/(?:www\.)?reddit\.com\/gallery\//.test(
-    content
-  );
+  const isGallery = /href="https?:\/\/(?:www\.)?reddit\.com\/gallery\//.test(content);
 
   return { image, directLink, isGallery };
 }
@@ -68,21 +79,28 @@ async function fetchPostJson(postUrl) {
 
     const res = await fetch(jsonUrl, {
       agent: proxyAgent,
-      headers: { 
-        'User-Agent': USER_AGENT, 
+      headers: {
+        'User-Agent': randomUserAgent(),
         Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-        'Accept-Language': 'en-US,en;q=0.9',
-        'Cache-Control': 'no-cache',
-        Pragma: 'no-cache',
+        'Accept-Language': 'en-US,en;q=0.5',
+        'Accept-Encoding': 'gzip, deflate, br',
+        Connection: 'keep-alive',
         'Upgrade-Insecure-Requests': '1',
+        'Sec-Fetch-Dest': 'document',
+        'Sec-Fetch-Mode': 'navigate',
+        'Sec-Fetch-Site': 'same-origin',
+        'Sec-Fetch-User': '?1',
+        Referer: 'https://old.reddit.com/r/turtle/',
       },
     });
+
     console.log('STATUS:', res.status, jsonUrl);
+
     if (!res.ok) {
       const denyReason = res.headers.get('x-deny-reason');
       const body = await res.text();
       console.error('DENY REASON:', denyReason);
-      console.error('RESPONSE BODY:', body.slice(0, 500)); // first 500 chars
+      console.error('RESPONSE BODY:', body.slice(0, 500));
       return null;
     }
 
@@ -94,27 +112,21 @@ async function fetchPostJson(postUrl) {
   }
 }
 
-/** Extract all image URLs from a post's JSON data */
 function extractImagesFromPostData(postData) {
   if (!postData) return [];
 
   const images = [];
 
-  // Single image post
   if (postData.url && /\.(jpg|jpeg|png|gif|webp)$/i.test(postData.url)) {
     images.push(postData.url);
     return images;
   }
 
-  // Gallery post — media_metadata holds all images
   if (postData.is_gallery && postData.media_metadata) {
     for (const item of Object.values(postData.media_metadata)) {
       if (item.status !== 'valid') continue;
-
-      // Prefer the largest 'p' (preview) resolution, fallback to 's' (source)
       if (item.p && item.p.length > 0) {
-        const largest = item.p[item.p.length - 1];
-        images.push(decodeHtml(largest.u));
+        images.push(decodeHtml(item.p[item.p.length - 1].u));
       } else if (item.s?.u) {
         images.push(decodeHtml(item.s.u));
       } else if (item.s?.gif) {
@@ -124,14 +136,11 @@ function extractImagesFromPostData(postData) {
     return images;
   }
 
-  // preview.reddit.com resolutions (non-gallery image posts)
   const previews = postData.preview?.images;
   if (previews && previews.length > 0) {
     const resolutions = previews[0].resolutions;
     if (resolutions && resolutions.length > 0) {
-      // Pick the highest available resolution
-      const largest = resolutions[resolutions.length - 1];
-      images.push(decodeHtml(largest.url));
+      images.push(decodeHtml(resolutions[resolutions.length - 1].url));
     } else if (previews[0].source?.url) {
       images.push(decodeHtml(previews[0].source.url));
     }
@@ -140,71 +149,65 @@ function extractImagesFromPostData(postData) {
   return images;
 }
 
-/** Extract Reddit-hosted MP4 URL from post data */
 function extractVideoFromPostData(postData) {
   if (!postData) return null;
-  const vid =
-    postData.media?.reddit_video ?? postData.secure_media?.reddit_video;
+  const vid = postData.media?.reddit_video ?? postData.secure_media?.reddit_video;
   if (!vid) return null;
   return {
     src: decodeHtml(vid.fallback_url ?? vid.hls_url ?? ''),
-    poster: null, // filled in below
+    poster: null,
   };
 }
 
 async function scrapeRedditTopPosts() {
-  console.log('Fetching r/turtle top posts via RSS...');
+  console.log('Fetching r/turtle top post via RSS...');
 
   const feed = await parser.parseURL(
     'https://old.reddit.com/r/turtle/top/.rss?t=day'
   );
 
-  const posts = [];
-  for (const item of feed.items) {
-    const { image, directLink, isGallery } = extractFromContent(item.content);
+  const item = feed.items[0];
+  if (!item) return [];
 
-    const isVideo = directLink && directLink.includes('v.redd.it');
-    const isDirectImage = directLink && directLink.includes('i.redd.it');
+  const { image, directLink, isGallery } = extractFromContent(item.content);
 
-    const thumbnailRaw = item.thumbnail?.$?.url
-      ? decodeHtml(item.thumbnail.$.url)
-      : null;
+  const isVideo = directLink && directLink.includes('v.redd.it');
+  const isDirectImage = directLink && directLink.includes('i.redd.it');
 
-    const postUrl = item.link ?? null;
-    const postData = postUrl ? await fetchPostJson(postUrl) : null;
+  const thumbnailRaw = item.thumbnail?.$?.url
+    ? decodeHtml(item.thumbnail.$.url)
+    : null;
 
-    // delay between each fetch
-    await new Promise(r => setTimeout(r, 1500));
+  const postUrl = item.link ?? null;
 
-    let images = [];
-    if (isGallery && postData) {
-      images = extractImagesFromPostData(postData);
-    } else if (postData) {
-      images = extractImagesFromPostData(postData);
-    } else if (isDirectImage) {
-      images = [directLink];
-    } else if (image) {
-      images = [image];
-    } else if (thumbnailRaw) {
-      images = [thumbnailRaw];
-    }
+  // Small random delay before fetching to look more human
+  await randomDelay();
+  const postData = postUrl ? await fetchPostJson(postUrl) : null;
 
-    let video = null;
-    if (isVideo && postData) {
-      video = extractVideoFromPostData(postData);
-      if (video) video.poster = thumbnailRaw;
-    }
-
-    posts.push({
-      title: item.title,
-      author: (item.author ?? '').replace('/u/', ''),
-      url: postUrl,
-      images,
-      video,
-    });
+  let images = [];
+  if (postData) {
+    images = extractImagesFromPostData(postData);
+  } else if (isDirectImage) {
+    images = [directLink];
+  } else if (image) {
+    images = [image];
+  } else if (thumbnailRaw) {
+    images = [thumbnailRaw];
   }
 
-  return posts;
+  let video = null;
+  if (isVideo && postData) {
+    video = extractVideoFromPostData(postData);
+    if (video) video.poster = thumbnailRaw;
+  }
+
+  return [{
+    title: item.title,
+    author: (item.author ?? '').replace('/u/', ''),
+    url: postUrl,
+    images,
+    video,
+  }];
 }
 
 module.exports = { scrapeRedditTopPosts };

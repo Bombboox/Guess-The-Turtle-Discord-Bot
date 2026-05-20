@@ -660,7 +660,7 @@ client.once('ready', async () => {
     timezone: GAME_TIMEZONE
   });
 
-  // Daily Reddit post at 8 PM
+  // Daily Reddit post at 8 AM
   cron.schedule(timeStringToCron(REDDIT_POST_TIME), async () => {
     try {
       const channel = await client.channels.fetch(REDDIT_CHANNEL_ID);
