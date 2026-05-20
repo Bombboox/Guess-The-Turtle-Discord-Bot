@@ -35,6 +35,7 @@ const parser = new RSSParser({
     'Sec-Fetch-Mode': 'navigate',
     'Sec-Fetch-Site': 'none',
     'Sec-Fetch-User': '?1',
+    Cookie: `token_v2=${process.env.REDDIT_TOKEN_V2}; session_tracker=${process.env.REDDIT_SESSION_TRACKER}`,
   },
   requestOptions: { agent: proxyAgent },
 });
@@ -91,8 +92,10 @@ async function fetchPostJson(postUrl) {
         'Sec-Fetch-Site': 'same-origin',
         'Sec-Fetch-User': '?1',
         Referer: 'https://old.reddit.com/r/turtle/',
+        Cookie: `token_v2=${process.env.REDDIT_TOKEN_V2}; session_tracker=${process.env.REDDIT_SESSION_TRACKER}`,
+  
       },
-    });
+  });
 
     console.log('STATUS:', res.status, jsonUrl);
 
