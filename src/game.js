@@ -191,25 +191,29 @@ async function handleSexButton(interaction, gameType) {
   }
 
   const sexVal = (state.turtle.sex || '').toLowerCase();
-  if (sexVal === 'unknown') {
-    await interaction.reply({ content: "This turtle's sex is unknown — no points for this one!", ephemeral: true });
-    return;
-  }
-
   const guessedMale = interaction.customId.startsWith('sex_male');
-  const correct = (guessedMale && sexVal === 'male') || (!guessedMale && sexVal === 'female');
 
-  if (!correct) {
-    await interaction.reply({ content: `Not quite! That's not the right sex.`, ephemeral: true });
-    return;
+  if (sexVal === 'unknown') {
+    // Nobody can get this one — reveal it and mark as resolved.
+    state.guessedSex = '(unknown)';
+    const embed = new EmbedBuilder()
+      .setDescription(`⚥ This turtle's sex wasn't recorded on iNaturalist — nobody loses points!`)
+      .setColor(0x95a5a6);
+    await interaction.reply({ embeds: [embed] });
+  } else {
+    const correct = (guessedMale && sexVal === 'male') || (!guessedMale && sexVal === 'female');
+
+    if (!correct) {
+      await interaction.reply({ content: `Not quite! That's not the right sex.`, ephemeral: true });
+      return;
+    }
+
+    state.guessedSex = interaction.user.username;
+    const embed = new EmbedBuilder()
+      .setDescription(`✅ **${interaction.user.username}** guessed the sex — **${state.turtle.sex}**!`)
+      .setColor(0x2ecc71);
+    await interaction.reply({ embeds: [embed] });
   }
-
-  state.guessedSex = interaction.user.username;
-
-  const embed = new EmbedBuilder()
-    .setDescription(`✅ **${interaction.user.username}** guessed the sex — **${state.turtle.sex}**!`)
-    .setColor(0x2ecc71);
-  await interaction.reply({ embeds: [embed] });
 
   // Disable the buttons on the original message.
   try {
@@ -267,21 +271,19 @@ async function startGame(channel, endAt, gameType) {
   scheduleGameEnd(channel, actualEndAt, gameType);
   scheduleHints(channel, gameType);
 
-  const sexKnown = turtle.sex && turtle.sex.toLowerCase() !== 'unknown';
-
   const embed = new EmbedBuilder()
     .setTitle('🐢 Guess the Turtle!')
     .setDescription(
       `Can you identify this turtle?\n\n` +
       `🔬 **Species** — type your guess in chat\n` +
-      (sexKnown ? `⚥ **Sex** — use the buttons below\n` : '') +
+      `⚥ **Sex** — use the buttons below\n` +
       `\n⏰ Game ends <t:${Math.floor(actualEndAt.getTime() / 1000)}:R>`
     )
     .setImage(turtle.photos[0])
     .setColor(0x1abc9c)
     .setFooter({ text: 'Hints will appear at 15 and 30 minutes' });
 
-  const components = sexKnown ? [makeSexButtons(gameType)] : [];
+  const components = [makeSexButtons(gameType)];
 
   await loadingMsg.edit({ embeds: [embed], components });
 
@@ -297,8 +299,7 @@ async function startGame(channel, endAt, gameType) {
 }
 
 function isRoundComplete(state) {
-  const sexKnown = state.turtle.sex && state.turtle.sex.toLowerCase() !== 'unknown';
-  return Boolean(state.guessedSpecies) && (Boolean(state.guessedSex) || !sexKnown);
+  return Boolean(state.guessedSpecies) && Boolean(state.guessedSex);
 }
 
 async function endGame(channel, gameType, endedEarly = false) {
@@ -327,7 +328,9 @@ async function endGame(channel, gameType, endedEarly = false) {
   desc += '\n';
 
   if (state.guessedSpecies) desc += `\n🔬 Species guessed by **${state.guessedSpecies}**`;
-  if (state.guessedSex) desc += `\n⚥ Sex guessed by **${state.guessedSex}**`;
+  if (state.guessedSex && state.guessedSex !== '(unknown)') {
+    desc += `\n⚥ Sex guessed by **${state.guessedSex}**`;
+  }
   if (!state.guessedSpecies && !endedEarly) desc += `\nNobody guessed the species this time.`;
 
   if (state.turtle.observationUrl) {
