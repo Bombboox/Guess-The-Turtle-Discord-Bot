@@ -248,7 +248,7 @@ async function startGame(channel, endAt, gameType) {
 
   const loadingEmbed = new EmbedBuilder()
     .setTitle('🐢 Finding a turtle...')
-    .setDescription('Searching iNaturalist for a living turtle with photos. Hang tight!')
+    .setDescription('Searching iNaturalist for turtle photos :D')
     .setColor(0x3498db);
   const loadingMsg = await channel.send({ embeds: [loadingEmbed] });
 

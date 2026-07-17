@@ -1,11 +1,12 @@
 require('dotenv').config();
 
-const { Client, GatewayIntentBits } = require('discord.js');
+const { Client, GatewayIntentBits, EmbedBuilder } = require('discord.js');
 const cron = require('node-cron');
 
 const config = require('./src/config');
 const { initializeDatabase, formatLeaderboardEmbed } = require('./src/leaderboard');
 const game = require('./src/game');
+const { fetchTopTurtlePost } = require('./src/reddit');
 
 const client = new Client({
   intents: [
@@ -42,6 +43,46 @@ client.on('messageCreate', async (message) => {
   if (lowerContent.startsWith(config.LEADERBOARD_COMMAND)) {
     const embed = await formatLeaderboardEmbed();
     await message.reply({ embeds: [embed] });
+    return;
+  }
+
+  // !reddit — post today's top r/turtle post in the turtle pictures channel.
+  if (lowerContent.startsWith(config.REDDIT_COMMAND)) {
+    try {
+      const post = await fetchTopTurtlePost();
+      if (!post) {
+        await message.reply('No posts found on r/turtle in the last 24 hours.');
+        return;
+      }
+
+      const channel = await client.channels.fetch(config.TURTLE_PICTURES_CHANNEL_ID);
+
+      const embeds = [
+        new EmbedBuilder()
+          .setTitle(post.title.slice(0, 256))
+          .setURL(post.link)
+          .setColor(0xff4500)
+          .setFooter({ text: "Today's top post on r/turtle" }),
+      ];
+      if (post.images.length) embeds[0].setImage(post.images[0]);
+      for (const url of post.images.slice(1, 10)) {
+        embeds.push(new EmbedBuilder().setImage(url).setColor(0xff4500));
+      }
+
+      await channel.send({ embeds });
+
+      // Videos can't go in embeds — send the links so Discord embeds them.
+      if (post.videos.length) {
+        await channel.send(post.videos.join('\n'));
+      }
+
+      if (message.channelId !== config.TURTLE_PICTURES_CHANNEL_ID) {
+        await message.reply(`Posted in <#${config.TURTLE_PICTURES_CHANNEL_ID}>!`);
+      }
+    } catch (err) {
+      console.error('Error fetching r/turtle post:', err);
+      await message.reply(`Could not fetch the top r/turtle post: ${err.message}`);
+    }
     return;
   }
 

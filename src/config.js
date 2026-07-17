@@ -5,6 +5,7 @@ module.exports = {
   OFFICIAL_GAME_CHANNEL_ID: '1489014569220444251',
   UNOFFICIAL_GAME_CHANNEL_ID: '1502479312647880788',
   LEADERBOARD_CHANNEL_ID: '1502479349754888242',
+  TURTLE_PICTURES_CHANNEL_ID: '1068714206129569873',
 
   // Daily schedule
   GAME_TIMEZONE: 'America/Los_Angeles',
@@ -23,6 +24,7 @@ module.exports = {
   // Chat commands
   START_COMMAND: '!startgame',
   LEADERBOARD_COMMAND: '!leaderboard',
+  REDDIT_COMMAND: '!reddit',
 
   // Database
   DB: {
